@@ -1,10 +1,9 @@
 #pragma once
 #include <memory>
 
-
 #include "detail/thread_pool.h"
 #include "detail/service_locator.h"
-
+    
 namespace gothreads {
     class go {
         static detail::service_locator _service_locator;
