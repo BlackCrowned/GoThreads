@@ -1,0 +1,41 @@
+
+namespace gothreads {
+    namespace detail {
+        
+        template <class Allocator>
+        std::unique_ptr<stack> stack::create(size_t size) {
+            return std::make_unique<stack_impl<Type, Allocator>>(size);
+        }
+
+        template <class Type, class Allocator>
+        stack_impl<Type, Allocator>::stack_impl(size_t size) : 
+        _container(size) {
+            
+        }
+
+        template <class Type, class Allocator>
+        size_t stack_impl<Type, Allocator>::capacity() const {
+            return _container.capacity();
+        }
+
+        template <class Type, class Allocator>
+        size_t stack_impl<Type, Allocator>::size() const {
+            return _container.size();
+        }
+
+        template <class Type, class Allocator>
+        void stack_impl<Type, Allocator>::reserve(size_t i) {
+            return _container.reserve(i);
+        }
+
+        template <class Type, class Allocator>
+        stack::Type* stack_impl<Type, Allocator>::data() {
+            return _container.data();
+        }
+
+        template <class Type, class Allocator>
+        stack::Type const* stack_impl<Type, Allocator>::data() const {
+            return _container.data();
+        }
+    }
+}
