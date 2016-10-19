@@ -1,5 +1,6 @@
 #pragma once
 #include "thread_pool.h"
+#include <memory>
 
 namespace gothreads {
     namespace detail {
