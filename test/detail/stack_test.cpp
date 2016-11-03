@@ -55,3 +55,26 @@ TEST_CASE("Method '.reserve' is correctly implemented", "[method]") {
         REQUIRE(s3->size() == 100);
     }
 }
+
+TEST_CASE("Method '.resize' is correctly implemented", "[method]") {
+    auto s1 = gothreads::detail::stack::create(0);
+    auto s2 = gothreads::detail::stack::create(100);
+    auto s3 = gothreads::detail::stack::create<std::allocator<int>>(100);
+
+    SECTION("Empty stack is initialized") {
+        s1->resize(50);
+        REQUIRE(s1->capacity() == 50);
+        REQUIRE(s1->size() == 50);
+    }
+
+    SECTION("Resize increases both capacity and size") {
+        s2->resize(150);
+        REQUIRE(s2->capacity() == 150);
+        REQUIRE(s2->size() == 150);
+    }
+    SECTION("Resize does not reduce capacity") {
+        s3->resize(50);
+        REQUIRE(s3->capacity() == 100);
+        REQUIRE(s3->size() == 50);
+    }
+}

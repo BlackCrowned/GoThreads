@@ -20,6 +20,9 @@ namespace gothreads {
             virtual size_t size() const = 0;
             virtual void reserve(size_t i) = 0;
 
+            virtual void resize(size_t i) = 0;
+            virtual void resize(size_t i, Type const& val) = 0;
+
             virtual Type* data() = 0;
             virtual Type const* data() const = 0;
             
@@ -37,6 +40,9 @@ namespace gothreads {
             size_t capacity() const override;
             size_t size() const override;
             void reserve(size_t i) override;
+
+            void resize(size_t i) override;
+            void resize(size_t i, Type const& val) override;
 
             Type* data() override;
             Type const* data() const override;

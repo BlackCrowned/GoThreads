@@ -29,6 +29,17 @@ namespace gothreads {
         }
 
         template <class Type, class Allocator>
+        void stack_impl<Type, Allocator>::resize(size_t i) {
+            return _container.resize(i);
+        }
+
+        template <class Type, class Allocator>
+        void stack_impl<Type, Allocator>::resize(size_t i, stack::Type const& val) {
+            return _container.resize(i, val);
+        }
+
+
+        template <class Type, class Allocator>
         stack::Type* stack_impl<Type, Allocator>::data() {
             return _container.data();
         }
