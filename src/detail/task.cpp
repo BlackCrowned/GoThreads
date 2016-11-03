@@ -10,7 +10,7 @@ namespace gothreads {
             _stack(),
             _exec_reroute(this, &task::_exec_setup)
         {
-            _task_state = task_state::waiting;
+            //_task_state = task_state::waiting;
         }
         
         task_state task::state() const {
