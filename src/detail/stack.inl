@@ -38,6 +38,10 @@ namespace gothreads {
             return _container.resize(i, val);
         }
 
+        template <class Type, class Allocator>
+        void stack_impl<Type, Allocator>::shrink_to_fit() {
+            return _container.shrink_to_fit();
+        }
 
         template <class Type, class Allocator>
         stack::Type* stack_impl<Type, Allocator>::data() {

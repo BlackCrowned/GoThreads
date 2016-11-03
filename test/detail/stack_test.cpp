@@ -78,3 +78,14 @@ TEST_CASE("Method '.resize' is correctly implemented", "[method]") {
         REQUIRE(s3->size() == 50);
     }
 }
+
+TEST_CASE("Method '.shrink_to_fit()' is correctly implemented", "[method]") {
+    auto s1 = gothreads::detail::stack::create(100);
+
+    SECTION("Shrink_to_fit reduces capacity") {
+        s1->resize(50);
+        s1->shrink_to_fit();
+        REQUIRE(s1->size() == 50);
+        REQUIRE(s1->capacity() == s1->size());
+    }
+}
