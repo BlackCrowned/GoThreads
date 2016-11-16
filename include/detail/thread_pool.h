@@ -6,7 +6,7 @@
 namespace gothreads {
     namespace detail {
         class thread_pool {
-            std::unordered_map<int, worker_thread> _worker_threads;
+            std::unordered_map<size_t, worker_thread> _worker_threads;
             size_t _id;
 
             size_t _max_threads;

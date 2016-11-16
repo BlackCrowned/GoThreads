@@ -25,7 +25,7 @@ namespace gothreads {
             if (_worker_threads.empty()) {
                 return _allocate_worker_thread();
             }
-            
+
             auto currentTasks = std::vector<size_t>();
             currentTasks.reserve(_worker_threads.size());
 
@@ -59,8 +59,9 @@ namespace gothreads {
         }
 
         worker_thread& thread_pool::_allocate_worker_thread() {
-            _worker_threads.emplace(++_id, worker_thread());
+            _worker_threads.emplace(std::piecewise_construct, std::make_tuple(++_id), std::make_tuple());
             return _worker_threads[_id];
         }
+        
     }
 }

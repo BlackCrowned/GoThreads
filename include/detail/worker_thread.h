@@ -2,6 +2,7 @@
 #include <thread>
 #include "scheduler.h"
 #include "task_pool.h"
+#include <mutex>
 
 namespace gothreads {
     namespace detail {
@@ -10,6 +11,10 @@ namespace gothreads {
             std::thread _thread;
             task_pool _task_pool;
             scheduler _scheduler;
+
+            std::mutex _cv_new_task_m;
+            std::mutex _task_pool_m;
+            std::condition_variable _cv_new_task;
 
         public:
             worker_thread();

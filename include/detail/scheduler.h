@@ -1,4 +1,5 @@
 #pragma once
+#include <condition_variable>
 
 namespace gothreads {
     namespace detail {
@@ -7,8 +8,12 @@ namespace gothreads {
 
         class scheduler {
             task_pool* _task_pool;
+
+            std::mutex* _cv_new_task_m;
+            std::mutex* _task_pool_m;
+            std::condition_variable* _cv_new_task;
         public:
-            explicit scheduler(task_pool* ptask_pool);
+            explicit scheduler(task_pool* ptask_pool, std::mutex* cv_new_task_m, std::mutex* task_pool_m, std::condition_variable* cv_new_task);
 
             void init();
 
