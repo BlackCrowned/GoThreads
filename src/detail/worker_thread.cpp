@@ -11,6 +11,14 @@ namespace gothreads {
             
         }
 
+        void worker_thread::schedule_task(task&& new_task) {
+            _task_pool.add(std::forward<task>(new_task));
+        }
+
+        size_t worker_thread::current_tasks() const {
+            return _task_pool.size();
+        }
+
         void worker_thread::_thread_entry() {
             _scheduler.init();
 

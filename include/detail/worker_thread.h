@@ -14,8 +14,12 @@ namespace gothreads {
         public:
             worker_thread();
 
+            void schedule_task(task&& new_task);
+
             task_pool const& get_task_pool() const;
             task_pool& get_task_pool();
+
+            size_t current_tasks() const;
 
         private:
             void _thread_entry();

@@ -2,6 +2,10 @@
 
 namespace gothreads {
     namespace detail {
+        size_t task_pool::size() const {
+            return _map.size();
+        }
+
         bool task_pool::empty() const {
             return _map.empty();
         }
@@ -18,5 +22,8 @@ namespace gothreads {
             return task();
         }
 
+        void task_pool::add(task&& new_task) {
+            _map.emplace(++_id, std::forward<task>(new_task));
+        }
     }
 }

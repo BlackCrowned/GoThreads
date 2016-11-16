@@ -12,7 +12,13 @@ namespace gothreads {
         }
 
         void thread_pool::schedule_task(task&& new_task) {
-            _get_worker_thread();
+            auto& t = _get_worker_thread();
+            
+            t.schedule_task(std::forward<task>(new_task));
+        }
+
+        size_t thread_pool::active_threads() {
+            return _worker_threads.size();
         }
 
         worker_thread& thread_pool::_get_worker_thread() {
@@ -24,7 +30,7 @@ namespace gothreads {
             currentTasks.reserve(_worker_threads.size());
 
             for (auto const& pair : _worker_threads) {
-                currentTasks.push_back(5);
+                currentTasks.push_back(pair.second.current_tasks());
             }
 
             if (_worker_threads.size() < _max_threads) {
@@ -53,7 +59,7 @@ namespace gothreads {
         }
 
         worker_thread& thread_pool::_allocate_worker_thread() {
-            _worker_threads.insert_or_assign(_id++, worker_thread());
+            _worker_threads.emplace(++_id, worker_thread());
             return _worker_threads[_id];
         }
     }

@@ -15,6 +15,8 @@ namespace gothreads {
 
             thread_pool();
             void schedule_task(task&& new_task);
+
+            size_t active_threads();
         private:
 
             worker_thread& _get_worker_thread();
