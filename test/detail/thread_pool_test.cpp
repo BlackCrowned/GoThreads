@@ -1,4 +1,4 @@
-#include "../dependencies/Catch-1.5.7/catch.hpp"
+#include "../dependencies/catch/single_include/catch.hpp"
 #include "../../include/detail/thread_pool.h"
 #include <iostream>
 

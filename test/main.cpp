@@ -1,6 +1,7 @@
 #define CATCH_CONFIG_RUNNER
 
-#include "dependencies/Catch-1.5.7/catch.hpp"
+struct IUnknown; //Fix compilation error with Clang/C2
+#include "dependencies/catch/single_include/catch.hpp"
 
 int main(int argc, char* const argv[]) {
     int result = Catch::Session().run(argc, argv);
