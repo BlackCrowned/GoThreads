@@ -19,7 +19,7 @@ namespace gothreads
         };
 
         class task {
-            const int _default_stack_size = 2^10;
+            const size_t _default_stack_size = 1024;
 
 
             std::function<void()> _function_entry_point;
@@ -27,7 +27,7 @@ namespace gothreads
 
             std::unique_ptr<stack> _stack;
 
-           generic::delegate<task_data const* (const task_data*)> _exec_reroute;
+            generic::delegate<task_data const* (const task_data*)> _exec_reroute;
 
         public:
             task();

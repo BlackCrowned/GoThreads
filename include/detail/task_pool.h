@@ -7,10 +7,11 @@ namespace gothreads {
         
         class task_pool {
             
-            std::unordered_map<size_t, task> _map;
+            std::list<std::pair<size_t, task>> _list;
             size_t _id;
+            mutable decltype(_list)::iterator _it;
         public:
-            task_pool() = default;
+            task_pool();
 
             size_t size() const;
             bool empty() const;

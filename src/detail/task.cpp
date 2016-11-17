@@ -83,7 +83,7 @@ namespace gothreads {
             _task_data->m_context.m_registers.esp = reinterpret_cast<decltype(_task_data->m_context.m_registers)::type>(_stack->data()) + sizeof(task_data);
             _task_data->m_context.m_registers.ebp = _task_data->m_context.m_registers.esp;
             _task_data->m_context.m_registers.eip = reinterpret_cast<decltype(_task_data->m_context.m_registers)::type>(        //Points to _function_entry_point
-                _function_entry_point.target<decltype(_task_data->m_context.m_registers)::type>());
+                _function_entry_point.target<void(*)()>());
         }
     }
 }

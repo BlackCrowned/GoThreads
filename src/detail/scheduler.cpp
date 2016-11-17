@@ -10,7 +10,8 @@ namespace gothreads {
         _cv_new_task_m(cv_new_task_m),
         _task_pool_m(task_pool_m),
         _cv_new_task(cv_new_task),
-        _state(state)
+        _state(state),
+        _task_data()
         {
             
         }
@@ -27,12 +28,12 @@ namespace gothreads {
                 }
                 task_pool_lk.lock();
                 if (!_task_pool->empty()) {
-                    //auto& task = _task_pool->next();
+                    auto& task = _task_pool->next();
                     task_pool_lk.unlock();
 
-                    //if (task.executable()) {
-                    //    task.exec(nullptr); //TODO Current Context
-                    //}
+                    if (task.executable()) {
+                        task.exec(&_task_data); //TODO Current Context
+                    }
                 }
                 else {
                     task_pool_lk.unlock();
