@@ -51,6 +51,7 @@ namespace gothreads
             static void _cdecl _return_point(task* t);
 
             template <class Allocator = std::allocator<stack::Type>> void _setup_context();
+            void _update_context();
         };
 
     }
