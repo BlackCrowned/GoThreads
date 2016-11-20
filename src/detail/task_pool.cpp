@@ -22,7 +22,7 @@ namespace gothreads {
             if (_it != _list.end()) {
                 ++_it;
             }
-            else {
+            if (_it == _list.end()) {
                 _it = _list.begin();
             }
             return _it->second;

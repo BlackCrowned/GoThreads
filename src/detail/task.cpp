@@ -9,6 +9,7 @@ namespace gothreads {
             _function_entry_point(),
             _task_state(task_state::empty),
             _stack(),
+            _task_context(nullptr),
             _scheduler_context(nullptr)
         {
             //_task_state = task_state::waiting;
@@ -43,12 +44,10 @@ namespace gothreads {
         }
 
         const task_data* task::exec(const task_data* ptr) {
-            _task_state = task_state::running;
+            _task_state = task_state::waiting;
             _scheduler_context = ptr;
             
-            assembler::swap_context(_stack->data(), const_cast<task_data*>(ptr));
-            //Make sure to return to this   //Do return to this
-            _task_state = task_state::waiting;
+            assembler::swap_context(_task_context, const_cast<task_data*>(ptr));
             return reinterpret_cast<task_data*>(_stack->data());
         }
 
@@ -71,21 +70,14 @@ namespace gothreads {
             t->_task_state = task_state::running;
 
             //Call function
-            //t->_function_entry_point();
-
-            //TEST
-            int test[50] = {0}; //Some stack allocations;
-            std::cout << "Can call shit" << std::endl;
-
-            int test1 = 0;
-            return;
+            t->_function_entry_point();
         }
 
         void task::_return_point(task* t) {
             //Cease and desist
             t->_task_state = task_state::stopped;
 
-            assembler::swap_context(const_cast<task_data*>(t->_scheduler_context), reinterpret_cast<void*>(t->_stack->data()));
+            assembler::swap_context(const_cast<task_data*>(t->_scheduler_context), t->_task_context);
         }
     }
 }

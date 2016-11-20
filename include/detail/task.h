@@ -27,6 +27,7 @@ namespace gothreads
 
             std::unique_ptr<stack> _stack;
 
+            task_data* _task_context;
             task_data const* _scheduler_context;
 
         public:
