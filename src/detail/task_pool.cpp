@@ -22,7 +22,7 @@ namespace gothreads {
             if (_it != _list.end()) {
                 ++_it;
             }
-            else {
+            if (_it == _list.end()) {
                 _it = _list.begin();
             }
             return _it->second;
@@ -32,6 +32,19 @@ namespace gothreads {
             class notimplemented {};
             throw notimplemented();
             return task();
+        }
+
+        void task_pool::erase_current_task() {
+            if (_it != _list.end() && _it != _list.begin()) {
+                _list.erase(_it--);
+            }
+            else if (_it != _list.end()){
+                _list.erase(_it);
+                _it = _list.begin();
+            }
+            else {
+                assert(false);
+            }
         }
 
         void task_pool::add(task&& new_task) {

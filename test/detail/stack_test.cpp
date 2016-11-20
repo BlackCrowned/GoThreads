@@ -1,4 +1,4 @@
-#include "../dependencies/Catch-1.5.7/catch.hpp"
+#include "../dependencies/catch/single_include/catch.hpp"
 #include "../../include/detail/stack.h"
 
 TEST_CASE("Can construct 'stack' class", "[constructable]") {

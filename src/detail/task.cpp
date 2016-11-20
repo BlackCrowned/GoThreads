@@ -1,5 +1,6 @@
 ﻿#include "../../include/detail/task.h"
 #include "../../include/detail/asm/imports.h"
+#include <iostream>
 
 namespace gothreads {
     namespace detail {
@@ -8,11 +9,34 @@ namespace gothreads {
             _function_entry_point(),
             _task_state(task_state::empty),
             _stack(),
-            _exec_reroute(this, &task::_exec_setup)
+            _task_context(nullptr),
+            _scheduler_context(nullptr)
         {
             //_task_state = task_state::waiting;
         }
-        
+
+        task::task(const task& t) :
+            _function_entry_point(t._function_entry_point),
+            _task_state(t._task_state),
+            _stack(stack::copy(t._stack)),
+            _task_context(t._task_context),
+            _scheduler_context(t._scheduler_context)
+        {
+            //Resetup context
+            _setup_context();
+        }
+
+        task::task(task&& t) noexcept :
+            _function_entry_point(std::move(t._function_entry_point)),
+            _task_state(std::move(t._task_state)),
+            _stack(std::move(t._stack)),
+            _task_context(std::move(t._task_context)),
+            _scheduler_context(std::move(t._scheduler_context))
+        {
+            //Update context
+            _update_context();
+        }
+
         task_state task::state() const {
             return _task_state;
         }
@@ -22,25 +46,10 @@ namespace gothreads {
         }
 
         const task_data* task::exec(const task_data* ptr) {
-            _task_state = task_state::running;
-            return _exec_reroute(ptr);
-        }
-
-        const task_data* task::_exec_setup(const task_data* ptr) {
-            //Setup
-            _setup_context();
-
-            //Skip init on later calls
-            _exec_reroute = _exec_reroute.from(this, &task::_exec_continue);
-
-            //Continue exec
-            return _exec_continue(ptr);
-        }
-
-        const task_data* task::_exec_continue(const task_data* ptr) {
-            assembler::swap_context(_stack->data(), const_cast<task_data*>(ptr));
-            //Make sure to return to this
             _task_state = task_state::waiting;
+            _scheduler_context = ptr;
+            
+            assembler::swap_context(_task_context, const_cast<task_data*>(ptr));
             return reinterpret_cast<task_data*>(_stack->data());
         }
 
@@ -59,31 +68,35 @@ namespace gothreads {
             assembler::swap_context(const_cast<task_data*>(ptr), current_context);
         }
 
-        void task::_entry_point() {
-            _task_state = task_state::running;
+        void task::_entry_point(task* t) {
+            t->_task_state = task_state::running;
 
             //Call function
-            _function_entry_point();
+            t->_function_entry_point();
         }
 
-        void task::_return_point() {
+        void task::_return_point(task* t) {
             //Cease and desist
-            _task_state = task_state::stopped;
+            t->_task_state = task_state::stopped;
+
+            assembler::swap_context(const_cast<task_data*>(t->_scheduler_context), t->_task_context);
         }
 
-        void task::_setup_context() {
-            //Make sure stack exists
-            if (!_stack) {
-                _stack = stack::create(_default_stack_size);
-            }
-            
-            task_data* _task_data = reinterpret_cast<task_data*>(_stack->data());
+        void task::_update_context() {
+            using Type = decltype(_task_context->m_context.m_registers)::type;
 
-            _task_data->m_task = this;
-            _task_data->m_context.m_registers.esp = reinterpret_cast<decltype(_task_data->m_context.m_registers)::type>(_stack->data()) + sizeof(task_data);
-            _task_data->m_context.m_registers.ebp = _task_data->m_context.m_registers.esp;
-            _task_data->m_context.m_registers.eip = reinterpret_cast<decltype(_task_data->m_context.m_registers)::type>(        //Points to _function_entry_point
-                _function_entry_point.target<void(*)()>());
+            //Allign stack
+            Type stack_base = reinterpret_cast<Type>(_stack->data() + _stack->size()) & static_cast<Type>(0xFFFFFFF0);
+
+            //Update this pointer
+            _task_context->m_task = this;
+
+            //Update this pointer
+            Type* argument = reinterpret_cast<Type*>(stack_base) - 2;
+            Type* argument_return_point = reinterpret_cast<Type*>(stack_base) - 1;
+
+            *argument = reinterpret_cast<Type>(this);
+            *argument_return_point = reinterpret_cast<Type>(this);
         }
     }
 }

@@ -1,4 +1,4 @@
-#include "../dependencies/Catch-1.5.7/catch.hpp"
+#include "../dependencies/catch/single_include/catch.hpp"
 #include "../../include/detail/thread_pool.h"
 #include <iostream>
 
@@ -16,12 +16,15 @@ TEST_CASE("Method '.schedule_task' is correctly implemented", "[method]") {
 
     for (size_t i = 0; i < 10; i++)
     {
-        t1.schedule_task(gothreads::detail::task([](size_t n)
+        t1.schedule_task(std::move(gothreads::detail::task([](size_t n)
         {
             static size_t x = 0;
             std::cout << x++ << ": queued up as " << n << ". item" << std::endl;
-        }, i));
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        }, i)));
     }
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
     REQUIRE(t1.active_threads() == 4);
 }

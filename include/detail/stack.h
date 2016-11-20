@@ -14,6 +14,9 @@ namespace gothreads {
             template<class Allocator = std::allocator<Type>>
             static std::unique_ptr<stack> create(size_t size = 0);
 
+            template<class Allocator = std::allocator<Type>>
+            static std::unique_ptr<stack> copy(std::unique_ptr<stack> const& s);
+
             virtual ~stack() = default;
             
             virtual size_t capacity() const = 0;

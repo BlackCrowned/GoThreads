@@ -11,10 +11,9 @@ namespace gothreads {
                 registers m_registers;  //Always store registers at the end of context structure
             };
 
+            context m_context;
 
             task* m_task;
-
-            context m_context;
         };
     }
 }

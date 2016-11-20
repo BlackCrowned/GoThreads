@@ -1,7 +1,5 @@
-#include "dependencies/Catch-1.5.7/catch.hpp"
+#include "dependencies/catch/single_include/catch.hpp"
 #include "../include/gothreads.h"
-
-#pragma comment(lib, "../Debug/GoThreads.lib")
 
 TEST_CASE("Can construct 'go' class", "[contructable]") {
     auto t1 = gothreads::go([](int i) {return 0; }, 25);    //with return and argument

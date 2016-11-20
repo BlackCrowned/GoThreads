@@ -1,6 +1,4 @@
-
-
-#include "../dependencies/Catch-1.5.7/catch.hpp"
+#include "../dependencies/catch/single_include/catch.hpp"
 #include "../../include/detail/task.h"
 TEST_CASE("Can construct 'task' class", "[constructable]") {
     auto t1 = gothreads::detail::task();    //Default constructor

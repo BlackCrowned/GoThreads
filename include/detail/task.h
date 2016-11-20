@@ -19,7 +19,7 @@ namespace gothreads
         };
 
         class task {
-            const size_t _default_stack_size = 1024;
+            const size_t _default_stack_size = 1 << 15;
 
 
             std::function<void()> _function_entry_point;
@@ -27,11 +27,14 @@ namespace gothreads
 
             std::unique_ptr<stack> _stack;
 
-            generic::delegate<task_data const* (const task_data*)> _exec_reroute;
+            task_data* _task_context;
+            task_data const* _scheduler_context;
 
         public:
             task();
             template<class Function, class ...Args> task(Function fn, Args&&... args);
+            task(const task& t);
+            task(task&& t) noexcept;
 
             template<class Allocator = std::allocator<stack::Type>> void alloc_stack();
 
@@ -42,14 +45,13 @@ namespace gothreads
             const task_data* exec(const task_data* ptr);
 
         private:
-            const task_data* _exec_setup(const task_data* ptr);
-            const task_data* _exec_continue(const task_data* ptr);
             void _exec_finish(const task_data* ptr);
 
-            void _entry_point();
-            void _return_point();
+            static void _cdecl _entry_point(task* t);
+            static void _cdecl _return_point(task* t);
 
-            void _setup_context();
+            template <class Allocator = std::allocator<stack::Type>> void _setup_context();
+            void _update_context();
         };
 
     }
