@@ -35,12 +35,13 @@ namespace gothreads {
                         task.exec(&_task_data); //TODO Current Context
                     }
 
-                    task_pool_lk.lock();
                     if (task.state() == task_state::stopped)
                     {
+                        task_pool_lk.lock();
                         _task_pool->erase_current_task();
+                        task_pool_lk.unlock();
                     }
-                    task_pool_lk.unlock();
+                    
                 }
                 else {
                     task_pool_lk.unlock();
