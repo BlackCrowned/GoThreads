@@ -17,6 +17,7 @@ namespace gothreads {
 
         worker_thread::~worker_thread() {
             _state = true;
+            _cv_new_task.notify_one();
             _thread.join();
         }
 

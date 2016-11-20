@@ -34,6 +34,19 @@ namespace gothreads {
             return task();
         }
 
+        void task_pool::erase_current_task() {
+            if (_it != _list.end() && _it != _list.begin()) {
+                _list.erase(_it--);
+            }
+            else if (_it != _list.end()){
+                _list.erase(_it);
+                _it = _list.begin();
+            }
+            else {
+                assert(false);
+            }
+        }
+
         void task_pool::add(task&& new_task) {
             _list.emplace_back(std::make_pair(++_id, std::forward<task>(new_task)));
         }
