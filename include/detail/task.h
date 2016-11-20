@@ -19,7 +19,7 @@ namespace gothreads
         };
 
         class task {
-            const size_t _default_stack_size = 4096000;
+            const size_t _default_stack_size = 1 << 15;
 
 
             std::function<void()> _function_entry_point;
