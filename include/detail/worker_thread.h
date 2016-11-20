@@ -16,7 +16,8 @@ namespace gothreads {
             std::mutex _task_pool_m;
             std::condition_variable _cv_new_task;
 
-            int _state;
+            message_queue _sender_queue;
+            message_queue _receiver_queue;
 
         public:
             worker_thread();

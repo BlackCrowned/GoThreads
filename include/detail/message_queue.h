@@ -8,12 +8,11 @@ namespace gothreads {
     namespace detail {
 
         class message {
-            
         public:
             message() = default;
             virtual ~message() = default;
 
-            virtual type_info type() const = 0;
+            virtual type_info const& type() const = 0;
         };
 
         namespace messages {
@@ -26,7 +25,7 @@ namespace gothreads {
                 explicit exit_thread(bool force = false, std::chrono::milliseconds time_to_exit = std::chrono::milliseconds(0));
                 virtual ~exit_thread() = default;
 
-                constexpr type_info type() const override;
+                type_info const& type() const override;
 
                 bool force() const;
                 std::chrono::milliseconds time_to_exit() const;

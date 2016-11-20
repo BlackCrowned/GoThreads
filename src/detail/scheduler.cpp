@@ -5,12 +5,13 @@
 namespace gothreads {
     namespace detail {
 
-        scheduler::scheduler(task_pool* ptask_pool, std::mutex* cv_new_task_m, std::mutex* task_pool_m, std::condition_variable* cv_new_task, int* state) :
+        scheduler::scheduler(task_pool* ptask_pool, std::mutex* cv_new_task_m, std::mutex* task_pool_m, std::condition_variable* cv_new_task, message_queue* receiver_queue, message_queue* sender_queue) :
         _task_pool(ptask_pool),
         _cv_new_task_m(cv_new_task_m),
         _task_pool_m(task_pool_m),
         _cv_new_task(cv_new_task),
-        _state(state),
+        _receiver_queue(receiver_queue),
+        _sender_queue(sender_queue),
         _task_data()
         {
             
@@ -23,8 +24,13 @@ namespace gothreads {
         void scheduler::run() {
             std::unique_lock<std::mutex> task_pool_lk(*_task_pool_m, std::defer_lock);
             while(true) {
-                if (*_state == true) {
-                    return;
+                if (!_receiver_queue->empty()) {
+                    auto msg = _receiver_queue->receive();
+                    if (msg->type() == typeid(messages::exit_thread)) {
+                        auto m = static_cast<messages::exit_thread*>(msg.get());
+                        if (m->force() == true)
+                            return;
+                    }
                 }
                 task_pool_lk.lock();
                 if (!_task_pool->empty()) {

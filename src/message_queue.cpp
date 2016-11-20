@@ -12,16 +12,16 @@ namespace gothreads {
 
             }
 
+            type_info const& exit_thread::type() const {
+                return typeid(exit_thread);
+            }
+
             bool exit_thread::force() const {
                 return _force;
             }
 
             std::chrono::milliseconds exit_thread::time_to_exit() const {
                 return _time_to_exit;
-            }
-
-            constexpr type_info exit_thread::type() const {
-                return typeid(exit_thread);
             }
         }
 
@@ -49,7 +49,7 @@ namespace gothreads {
 
         std::unique_ptr<message> message_queue::receive() {
             std::lock_guard<std::mutex> lk(_mutex);
-            std::unique_ptr<message> message = _queue.front();
+            std::unique_ptr<message> message = std::move(_queue.front());
             _queue.pop();
 
             return message;
