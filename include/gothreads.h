@@ -11,7 +11,7 @@ namespace gothreads {
 
     public:
         template <class FuncT, class ...Args>
-        go(FuncT function, Args&&... arguments);
+        explicit go(FuncT function, Args&&... arguments);
 
 
     };

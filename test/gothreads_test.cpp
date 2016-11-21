@@ -2,7 +2,7 @@
 #include "../include/gothreads.h"
 
 TEST_CASE("Can construct 'go' class", "[contructable]") {
-    auto t1 = gothreads::go([](int i) {return 0; }, 25);    //with return and argument
-    auto t2 = gothreads::go([]() {return 0; });             //return only
-    auto t3 = gothreads::go([]() {return; }, 25);           //basic void
+    gothreads::go([](int i) {return 0; }, 25);    //with return and argument
+    gothreads::go([]() {return 0; });             //return only
+    gothreads::go([]() {return; });               //basic void
 }
