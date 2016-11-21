@@ -5,8 +5,9 @@ namespace gothreads {
     namespace detail {
         thread_pool::thread_pool() :
         _worker_threads(),
-        _id(1),
-        _max_threads(4)
+        _thread_id_table(),
+        _max_threads(4),
+        _id(1)
         {
             
         }
@@ -59,8 +60,9 @@ namespace gothreads {
         }
 
         worker_thread& thread_pool::_allocate_worker_thread() {
-            _worker_threads.emplace(std::piecewise_construct, std::make_tuple(++_id), std::make_tuple());
-            return _worker_threads[_id];
+            auto& wt = _worker_threads[++_id];
+            _thread_id_table[wt.id()] = _id;
+            return wt;
         }
         
     }
