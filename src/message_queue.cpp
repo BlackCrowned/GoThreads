@@ -48,6 +48,22 @@ namespace gothreads {
 
         }
 
+        message_queue::message_queue(message_queue&& mq) noexcept :
+        _queue(std::move(mq._queue)),
+        _mutex(),
+        _cv(),
+        _receiver_asleep(std::move(mq._receiver_asleep))
+        {
+        
+        }
+
+        message_queue& message_queue::operator=(message_queue&& mq) noexcept {
+            _queue = std::move(mq._queue);
+            _receiver_asleep = std::move(mq._receiver_asleep);
+
+            return *this;
+        }
+
         void message_queue::send(std::unique_ptr<message>&& msg) {
             std::unique_lock<std::mutex> lk(_mutex); //Lock
             _queue.push(std::forward<std::unique_ptr<message>>(msg));
