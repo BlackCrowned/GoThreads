@@ -2,9 +2,9 @@
 #include <functional>
 #include <memory>
 #include <vector>
+#include <cassert>
 #include "stack.h"
 #include "../../include/detail/task_data.h"
-#include "../../dependencies/SRDelegate.hpp"
 
 namespace gothreads
 {

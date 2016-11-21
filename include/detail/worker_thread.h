@@ -2,7 +2,7 @@
 #include <thread>
 #include "scheduler.h"
 #include "task_pool.h"
-#include <mutex>
+#include "../../dependencies/SRDelegate.hpp"
 
 namespace gothreads {
     namespace detail {
