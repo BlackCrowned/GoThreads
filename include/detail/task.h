@@ -42,11 +42,9 @@ namespace gothreads
 
             bool executable() const;
 
-            const task_data* exec(const task_data* ptr);
+            void exec(const task_data* ptr);
 
         private:
-            void _exec_finish(const task_data* ptr);
-
             static void _cdecl _entry_point(task* t);
             static void _cdecl _return_point(task* t);
 

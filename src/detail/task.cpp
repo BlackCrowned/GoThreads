@@ -45,27 +45,11 @@ namespace gothreads {
             return _task_state == task_state::waiting && _task_state != task_state::empty;
         }
 
-        const task_data* task::exec(const task_data* ptr) {
+        void task::exec(const task_data* ptr) {
             _task_state = task_state::waiting;
             _scheduler_context = ptr;
             
             assembler::swap_context(_task_context, const_cast<task_data*>(ptr));
-            return reinterpret_cast<task_data*>(_stack->data());
-        }
-
-        void task::_exec_finish(const task_data* ptr) {
-            auto ptask_data = reinterpret_cast<task_data*>(_stack->data());
-
-            ptask_data->m_context.m_registers.eip = 0;    //Set to return addr! //THIS WILL BE IN swap_context
-            
-            //Return to scheduler context
-            void* current_context = assembler::get_current_context();
-
-            if (!current_context) {
-                //Uuuhhhh
-            }
-
-            assembler::swap_context(const_cast<task_data*>(ptr), current_context);
         }
 
         void task::_entry_point(task* t) {

@@ -9,7 +9,7 @@ namespace gothreads {
 
         template <class Allocator>
         std::unique_ptr<stack> stack::copy(std::unique_ptr<stack> const& s) {
-            return std::make_unique<stack_impl<Type, Allocator>>(*dynamic_cast<stack_impl<Type, Allocator>*>(s.get()));
+            return std::make_unique<stack_impl<Type, Allocator>>(*static_cast<stack_impl<Type, Allocator>*>(s.get()));
         }
 
         template <class Type, class Allocator>
