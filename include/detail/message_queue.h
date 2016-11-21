@@ -3,6 +3,7 @@
 #include <memory>
 #include <chrono>
 #include <mutex>
+#include "task.h"
 
 namespace gothreads {
     namespace detail {
@@ -29,6 +30,18 @@ namespace gothreads {
 
                 bool force() const;
                 std::chrono::milliseconds time_to_exit() const;
+            };
+
+            class add_task : public message{
+                task _task;
+
+            public:
+                explicit  add_task(task&& t);
+                virtual ~add_task() = default;
+
+                type_info const& type() const override;
+
+                task&& get();
             };
 
         }

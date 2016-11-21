@@ -23,6 +23,20 @@ namespace gothreads {
             std::chrono::milliseconds exit_thread::time_to_exit() const {
                 return _time_to_exit;
             }
+
+            add_task::add_task(task&& t) :
+            _task(std::forward<task>(t))
+            {
+                
+            }
+
+            type_info const& add_task::type() const {
+                return typeid(add_task);
+            }
+
+            task&& add_task::get() {
+                return std::move(_task);
+            }
         }
 
         message_queue::message_queue() :

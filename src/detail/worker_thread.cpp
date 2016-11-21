@@ -8,7 +8,7 @@ namespace gothreads {
         worker_thread::worker_thread() :
             _thread(),
             _task_pool(),
-            _scheduler(&_task_pool, &_cv_new_task_m, &_task_pool_m, &_cv_new_task, &_sender_queue, &_receiver_queue),
+            _scheduler(&_task_pool, &_sender_queue, &_receiver_queue),
             _sender_queue(),
             _receiver_queue()
         {
@@ -18,15 +18,11 @@ namespace gothreads {
 
         worker_thread::~worker_thread() {
             _sender_queue.send(std::make_unique<messages::exit_thread>(true));
-            _cv_new_task.notify_one();
             _thread.join();
         }
 
         void worker_thread::schedule_task(task&& new_task) {
-            std::unique_lock<std::mutex> task_pool_lock(_task_pool_m);
-            _task_pool.add(std::forward<task>(new_task));
-            task_pool_lock.unlock();
-            _cv_new_task.notify_one();
+            _sender_queue.send(std::make_unique<messages::add_task>(std::forward<task>(new_task)));
         }
 
         size_t worker_thread::current_tasks() const {
