@@ -19,12 +19,9 @@ TEST_CASE("Method '.schedule_task' is correctly implemented", "[method]") {
         t1.schedule_task(std::move(gothreads::detail::task([](size_t n)
         {
             static size_t x = 0;
-            std::cout << x++ << ": queued up as " << n << ". item" << std::endl;
-            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
         }, i)));
     }
-
-    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
     REQUIRE(t1.active_threads() == 4);
 }
