@@ -34,6 +34,10 @@ namespace gothreads {
             return task();
         }
 
+        task& task_pool::current() const {
+            return _it->second;
+        }
+
         void task_pool::erase_current_task() {
             if (_it != _list.end() && _it != _list.begin()) {
                 _list.erase(_it--);

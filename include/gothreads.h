@@ -5,10 +5,18 @@
 #include "detail/service_locator.h"
     
 namespace gothreads {
-    class go {
-        static detail::service_locator _service_locator;
-        std::shared_ptr<detail::thread_pool> _thread_pool;
+    namespace detail {
+        class base {
+        protected:
+            static service_locator _service_locator;
+            std::shared_ptr<thread_pool> _thread_pool;
 
+        public:
+            base();
+        };
+    }
+    
+    class go : public detail::base {
     public:
         template <class FuncT, class ...Args>
         explicit go(FuncT function, Args&&... arguments);
@@ -16,6 +24,10 @@ namespace gothreads {
 
     };
 
+    class yield : public detail::base{
+    public:
+        yield();
+    };
 }
 
 

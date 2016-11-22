@@ -20,6 +20,7 @@ namespace gothreads {
 
             thread_pool();
             void schedule_task(task&& new_task);
+            void yield_task(ThreadIdType const& id);
 
             size_t active_threads();
         private:

@@ -44,6 +44,8 @@ namespace gothreads
 
             void exec(task_data* ptr);
 
+            void yield();
+
         private:
             static void _cdecl _entry_point(task* t);
             static void _cdecl _return_point(task* t);

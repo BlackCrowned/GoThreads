@@ -52,6 +52,10 @@ namespace gothreads {
             assembler::swap_context(_task_context, ptr);
         }
 
+        void task::yield() {
+            _yield_point(this);
+        }
+
         void task::_entry_point(task* t) {
             t->_task_state = task_state::running;
 

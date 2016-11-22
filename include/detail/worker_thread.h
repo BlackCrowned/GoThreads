@@ -29,6 +29,7 @@ namespace gothreads {
             worker_thread& operator=(worker_thread&& wt) noexcept;
 
             void schedule_task(task&& new_task);
+            void yield_task();
 
             task_pool const& get_task_pool() const;
             task_pool& get_task_pool();

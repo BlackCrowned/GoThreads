@@ -24,6 +24,10 @@ namespace gothreads {
             _sender_queue.send(std::make_unique<messages::add_task>(std::forward<task>(new_task)));
         }
 
+        void worker_thread::yield_task() {
+            _task_pool.current().yield();
+        }
+
         size_t worker_thread::current_tasks() const {
             return _task_pool.size();
         }
