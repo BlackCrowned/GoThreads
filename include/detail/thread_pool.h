@@ -6,15 +6,21 @@
 namespace gothreads {
     namespace detail {
         class thread_pool {
-            std::unordered_map<size_t, worker_thread> _worker_threads;
-            size_t _id;
+            using IdType = size_t;
+            using ThreadIdType = worker_thread::IdType;
+
+            std::unordered_map<IdType, worker_thread> _worker_threads;
+            std::unordered_map<ThreadIdType, IdType> _thread_id_table;
 
             size_t _max_threads;
+
+            IdType _id;
 
         public:
 
             thread_pool();
             void schedule_task(task&& new_task);
+            void yield_task(ThreadIdType const& id);
 
             size_t active_threads();
         private:

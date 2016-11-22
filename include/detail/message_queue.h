@@ -56,6 +56,10 @@ namespace gothreads {
 
         public:
             message_queue();
+            message_queue(message_queue const& mq) = delete;
+            message_queue(message_queue&& mq) noexcept;
+
+            message_queue& operator=(message_queue&& mq) noexcept;
 
             void send(std::unique_ptr<message>&& msg);
             std::unique_ptr<message> receive();

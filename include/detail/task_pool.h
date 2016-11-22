@@ -19,6 +19,8 @@ namespace gothreads {
             task& next();
             task const& next() const;
 
+            task& current() const;
+
             void erase_current_task();
 
             void add(task&& new_task);
