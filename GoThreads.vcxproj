@@ -141,6 +141,7 @@
     <ClInclude Include="include\detail\x86\registers.h" />
     <ClInclude Include="include\gothreads.h" />
     <ClInclude Include="include\detail\worker_thread.h" />
+    <ClInclude Include="include\mutex.h" />
   </ItemGroup>
   <ItemGroup>
     <MASM Include="include\detail\asm\x86\get_current_context.asm">
@@ -164,6 +165,7 @@
     <ClCompile Include="src\detail\worker_thread.cpp" />
     <ClCompile Include="src\gothreads.cpp" />
     <ClCompile Include="src\message_queue.cpp" />
+    <ClCompile Include="src\mutex.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

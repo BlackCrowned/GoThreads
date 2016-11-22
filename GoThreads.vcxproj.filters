@@ -57,6 +57,9 @@
     <ClInclude Include="include\detail\unique_ptr_casts.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\mutex.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\gothreads.inl">
@@ -92,6 +95,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\message_queue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\mutex.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
