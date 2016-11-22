@@ -45,11 +45,11 @@ namespace gothreads {
             return _task_state == task_state::waiting && _task_state != task_state::empty;
         }
 
-        void task::exec(const task_data* ptr) {
+        void task::exec(task_data* ptr) {
             _task_state = task_state::waiting;
             _scheduler_context = ptr;
             
-            assembler::swap_context(_task_context, const_cast<task_data*>(ptr));
+            assembler::swap_context(_task_context, ptr);
         }
 
         void task::_entry_point(task* t) {
@@ -63,7 +63,14 @@ namespace gothreads {
             //Cease and desist
             t->_task_state = task_state::stopped;
 
-            assembler::swap_context(const_cast<task_data*>(t->_scheduler_context), t->_task_context);
+            assembler::swap_context(t->_scheduler_context, t->_task_context);
+        }
+
+        void task::_yield_point(task* t) {
+            //Set state to waiting
+            t->_task_state = task_state::waiting;
+
+            assembler::swap_context(t->_scheduler_context, t->_task_context);
         }
 
         void task::_update_context() {

@@ -28,7 +28,7 @@ namespace gothreads
             std::unique_ptr<stack> _stack;
 
             task_data* _task_context;
-            task_data const* _scheduler_context;
+            task_data* _scheduler_context;
 
         public:
             task();
@@ -42,11 +42,12 @@ namespace gothreads
 
             bool executable() const;
 
-            void exec(const task_data* ptr);
+            void exec(task_data* ptr);
 
         private:
             static void _cdecl _entry_point(task* t);
             static void _cdecl _return_point(task* t);
+            static void _cdecl _yield_point(task* t);
 
             template <class Allocator = std::allocator<stack::Type>> void _setup_context();
             void _update_context();
