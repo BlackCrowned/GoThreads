@@ -46,7 +46,19 @@ namespace gothreads {
 
         }
         
+        enum class cardinality {
+            one_to_one,
+            one_to_many,
+            many_to_one
+        };
+
+        template<cardinality c>
         class message_queue {
+            message_queue() = delete;
+        };
+
+        template<>
+        class message_queue<cardinality::one_to_one> {
             std::queue<std::unique_ptr<message>> _queue;
 
             mutable std::mutex _mutex;
@@ -57,9 +69,9 @@ namespace gothreads {
         public:
             message_queue();
             message_queue(message_queue const& mq) = delete;
-            message_queue(message_queue&& mq) noexcept;
+            message_queue(message_queue<cardinality::one_to_one>&& mq) noexcept;
 
-            message_queue& operator=(message_queue&& mq) noexcept;
+            message_queue<cardinality::one_to_one>& operator=(message_queue<cardinality::one_to_one>&& mq) noexcept;
 
             void send(std::unique_ptr<message>&& msg);
             std::unique_ptr<message> receive();
@@ -67,6 +79,12 @@ namespace gothreads {
             bool empty() const;
 
             void wait();
+        };
+
+        template<>
+        class message_queue<cardinality::one_to_many> {
+            message_queue();
+            message_queue(message_queue<cardinality::one_to_many> const& mq) = delete;
         };
 
     }
