@@ -18,8 +18,8 @@ namespace gothreads {
             task_pool _task_pool;
             scheduler _scheduler;
 
-            message_queue<cardinality::one_to_one> _sender_queue;
-            message_queue<cardinality::one_to_one> _receiver_queue;
+            message_queue _sender_queue;
+            message_queue _receiver_queue;
 
         public:
             worker_thread();

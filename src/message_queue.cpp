@@ -39,7 +39,7 @@ namespace gothreads {
             }
         }
 
-        message_queue<cardinality::one_to_one>::message_queue() :
+        message_queue::message_queue() :
         _queue(),
         _mutex(),
         _cv(),
@@ -48,7 +48,7 @@ namespace gothreads {
 
         }
 
-        message_queue<cardinality::one_to_one>::message_queue(message_queue&& mq) noexcept :
+        message_queue::message_queue(message_queue&& mq) noexcept :
         _queue(std::move(mq._queue)),
         _mutex(),
         _cv(),
@@ -57,14 +57,14 @@ namespace gothreads {
         
         }
 
-        message_queue<cardinality::one_to_one>& message_queue<cardinality::one_to_one>::operator=(message_queue&& mq) noexcept {
+        message_queue& message_queue::operator=(message_queue&& mq) noexcept {
             _queue = std::move(mq._queue);
             _receiver_asleep = std::move(mq._receiver_asleep);
 
             return *this;
         }
 
-        void message_queue<cardinality::one_to_one>::send(std::unique_ptr<message>&& msg) {
+        void message_queue::send(std::unique_ptr<message>&& msg) {
             std::unique_lock<std::mutex> lk(_mutex); //Lock
             _queue.push(std::forward<std::unique_ptr<message>>(msg));
             if (_receiver_asleep) {
@@ -77,7 +77,7 @@ namespace gothreads {
             }
         }
 
-        std::unique_ptr<message> message_queue<cardinality::one_to_one>::receive() {
+        std::unique_ptr<message> message_queue::receive() {
             std::lock_guard<std::mutex> lk(_mutex);
             std::unique_ptr<message> message = std::move(_queue.front());
             _queue.pop();
@@ -85,12 +85,12 @@ namespace gothreads {
             return message;
         }
 
-        bool message_queue<cardinality::one_to_one>::empty() const {
+        bool message_queue::empty() const {
             std::lock_guard<std::mutex> lk(_mutex);
             return _queue.empty();
         }
 
-        void message_queue<cardinality::one_to_one>::wait() {
+        void message_queue::wait() {
             std::unique_lock<std::mutex> lk(_mutex);
 
             _receiver_asleep = true;

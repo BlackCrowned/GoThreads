@@ -5,7 +5,7 @@
 namespace gothreads {
     namespace detail {
 
-        scheduler::scheduler(task_pool* ptask_pool, message_queue<cardinality::one_to_one>* receiver_queue, message_queue<cardinality::one_to_one>* sender_queue) :
+        scheduler::scheduler(task_pool* ptask_pool, message_queue* receiver_queue, message_queue* sender_queue) :
         _task_pool(ptask_pool),
         _receiver_queue(receiver_queue),
         _sender_queue(sender_queue),
