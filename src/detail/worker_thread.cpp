@@ -28,6 +28,10 @@ namespace gothreads {
             _task_pool.current().yield();
         }
 
+        void worker_thread::wait_for_mutex(std::shared_ptr<mutex> mutex) {
+            
+        }
+
         size_t worker_thread::current_tasks() const {
             return _task_pool.size();
         }

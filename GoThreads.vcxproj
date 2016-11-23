@@ -129,6 +129,7 @@
   <ItemGroup>
     <ClInclude Include="dependencies\SRDelegate.hpp" />
     <ClInclude Include="include\detail\asm\imports.h" />
+    <ClInclude Include="include\detail\base.h" />
     <ClInclude Include="include\detail\message_queue.h" />
     <ClInclude Include="include\detail\scheduler.h" />
     <ClInclude Include="include\detail\service_locator.h" />
@@ -157,6 +158,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\detail\base.cpp" />
     <ClCompile Include="src\detail\scheduler.cpp" />
     <ClCompile Include="src\detail\task.cpp" />
     <ClCompile Include="src\detail\service_locator.cpp" />

@@ -43,6 +43,13 @@ namespace gothreads {
                     {
                         _task_pool->erase_current_task();
                     }
+
+                    switch(task.state()) {
+                        case task_state::stopped:
+                        _task_pool->erase_current_task();
+                        break;
+                        default: break;
+                    }
                     
                 }
                 else {

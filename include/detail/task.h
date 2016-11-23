@@ -15,6 +15,7 @@ namespace gothreads
             init,
             waiting,
             running,
+            blocking,
             stopped
         };
 
@@ -44,12 +45,10 @@ namespace gothreads
 
             void exec(task_data* ptr);
 
-            void yield();
-
+            void yield(task_state state = task_state::waiting);
         private:
             static void _cdecl _entry_point(task* t);
             static void _cdecl _return_point(task* t);
-            static void _cdecl _yield_point(task* t);
 
             template <class Allocator = std::allocator<stack::Type>> void _setup_context();
             void _update_context();
