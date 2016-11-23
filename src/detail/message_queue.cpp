@@ -1,4 +1,4 @@
-#include "../include/detail/message_queue.h"
+#include "../../include/detail/message_queue.h"
 
 namespace gothreads {
     namespace detail {
