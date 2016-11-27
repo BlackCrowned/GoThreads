@@ -74,6 +74,9 @@
     <None Include="src\detail\stack.inl">
       <Filter>Header Files</Filter>
     </None>
+    <None Include="src\detail\message_queue.inl">
+      <Filter>Header Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\detail\thread_pool.cpp">
@@ -97,13 +100,13 @@
     <ClCompile Include="src\detail\task_pool.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\message_queue.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\mutex.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\detail\base.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\detail\message_queue.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

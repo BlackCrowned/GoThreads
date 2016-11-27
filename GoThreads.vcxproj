@@ -151,6 +151,7 @@
     <MASM Include="include\detail\asm\x86\swap_context.asm">
       <FileType>Document</FileType>
     </MASM>
+    <None Include="src\detail\message_queue.inl" />
     <None Include="src\detail\stack.inl" />
     <None Include="src\detail\task.inl" />
     <None Include="src\gothreads.inl">
@@ -166,7 +167,7 @@
     <ClCompile Include="src\detail\thread_pool.cpp" />
     <ClCompile Include="src\detail\worker_thread.cpp" />
     <ClCompile Include="src\gothreads.cpp" />
-    <ClCompile Include="src\message_queue.cpp" />
+    <ClCompile Include="src\detail\message_queue.cpp" />
     <ClCompile Include="src\mutex.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
