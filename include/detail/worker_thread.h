@@ -31,7 +31,7 @@ namespace gothreads {
             worker_thread& operator=(worker_thread&& wt) noexcept;
 
             void schedule_task(task&& new_task);
-            void yield_task();
+            void yield_task() const;
 
             void wait_for_mutex(std::shared_ptr<mutex> mutex);
 
