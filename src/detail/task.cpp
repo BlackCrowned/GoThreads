@@ -5,7 +5,10 @@
 namespace gothreads {
     namespace detail {
 
+        task::IdType task::_id_counter = 0;
+
         task::task() :
+            _id(++_id_counter),
             _function_entry_point(),
             _task_state(task_state::empty),
             _stack(),
@@ -16,6 +19,7 @@ namespace gothreads {
         }
 
         task::task(const task& t) :
+            _id(t._id),
             _function_entry_point(t._function_entry_point),
             _task_state(t._task_state),
             _stack(stack::copy(t._stack)),
@@ -27,6 +31,7 @@ namespace gothreads {
         }
 
         task::task(task&& t) noexcept :
+            _id(std::move(t._id)),
             _function_entry_point(std::move(t._function_entry_point)),
             _task_state(std::move(t._task_state)),
             _stack(std::move(t._stack)),
@@ -39,6 +44,10 @@ namespace gothreads {
 
         task_state task::state() const {
             return _task_state;
+        }
+
+        task::IdType task::id() const {
+            return _id;
         }
 
         bool task::executable() const {

@@ -22,10 +22,13 @@ namespace gothreads
         };
 
         class task {
+            typedef size_t IdType;
+            
             friend class scheduler;
             
             const size_t _default_stack_size = 1 << 15;
-
+            static IdType _id_counter;
+            IdType _id;
 
             std::function<void()> _function_entry_point;
             task_state _task_state;
@@ -44,6 +47,8 @@ namespace gothreads
             template<class Allocator = std::allocator<stack::Type>> void alloc_stack();
 
             task_state state() const;
+
+            IdType id() const;
 
             bool executable() const;
 
