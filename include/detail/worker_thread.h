@@ -2,13 +2,13 @@
 #include <thread>
 #include "scheduler.h"
 #include "task_pool.h"
+#include "message_queue.h"
 #include "../../dependencies/SRDelegate.hpp"
 
 namespace gothreads {
-    namespace detail {
+    class mutex;
 
-        class mutex;
-        
+    namespace detail {
         class worker_thread {
         public:
             using IdType = decltype(std::declval<std::thread>().get_id());
