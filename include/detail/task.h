@@ -5,6 +5,7 @@
 #include <cassert>
 #include "stack.h"
 #include "../../include/detail/task_data.h"
+#include "scheduler.h"
 
 namespace gothreads
 {
@@ -21,6 +22,8 @@ namespace gothreads
         };
 
         class task {
+            friend class scheduler;
+            
             const size_t _default_stack_size = 1 << 15;
 
 

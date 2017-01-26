@@ -46,8 +46,12 @@ namespace gothreads {
 
                     switch(task.state()) {
                         case task_state::stopped:
-                        _task_pool->erase_current_task();
-                        break;
+                            _task_pool->erase_current_task();
+                            break;
+                        case task_state::reschedule:
+                            task.state(task_state::blocking);
+                            _task_pool->erase_current_task();
+                            break;
                         default: break;
                     }
                     
