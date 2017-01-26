@@ -35,6 +35,8 @@ namespace gothreads {
 
             void wait_for_mutex(mutex const* mutex);
 
+            void reschedule_task();
+
             task_pool const& get_task_pool() const;
             task_pool& get_task_pool();
 

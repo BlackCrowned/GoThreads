@@ -32,6 +32,10 @@ namespace gothreads {
             _task_pool.current().yield(task_state::blocking);
         }
 
+        void worker_thread::reschedule_task() {
+            _task_pool.current().yield(task_state::reschedule);
+        }
+
         size_t worker_thread::current_tasks() const {
             return _task_pool.size();
         }
