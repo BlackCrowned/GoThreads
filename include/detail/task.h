@@ -16,7 +16,8 @@ namespace gothreads
             waiting,
             running,
             blocking,
-            stopped
+            stopped,
+            reschedule
         };
 
         class task {
