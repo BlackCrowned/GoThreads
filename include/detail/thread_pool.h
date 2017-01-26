@@ -2,15 +2,20 @@
 #include <unordered_map>
 #include "task.h"
 #include "worker_thread.h"
+#include "mutex_control.h"
 
 namespace gothreads {
     namespace detail {
         class thread_pool {
+        public:
             using IdType = size_t;
             using ThreadIdType = worker_thread::IdType;
 
+        private:
             std::unordered_map<IdType, worker_thread> _worker_threads;
             std::unordered_map<ThreadIdType, IdType> _thread_id_table;
+
+            mutex_control _mutex_control;
 
             size_t _max_threads;
 
