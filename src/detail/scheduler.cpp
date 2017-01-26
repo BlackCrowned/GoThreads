@@ -1,6 +1,7 @@
 #include "../../include/detail/scheduler.h"
 
 #include "../../include/detail/task_pool.h"
+#include "../../include/detail/message_queue.h"
 
 namespace gothreads {
     namespace detail {
