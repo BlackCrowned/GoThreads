@@ -20,16 +20,16 @@ TEST_CASE("Can yield inside of task", "[feature]") {
 }
 
 TEST_CASE("Can use mutexes", "[feature]") {
+    gothreads::mutex m;
+    
     for (size_t i = 0; i < 10; i++) {
-        gothreads::mutex m;
-
         gothreads::go([&]()
         {
             static size_t x = 0;
             m.lock();
             x++;
             std::cout << "Locked thread [" << x << "]" << std::endl;
-            //m.unlock();
+            m.unlock();
             std::cout << "UnLocked thread" << std::endl;
         });
     }
