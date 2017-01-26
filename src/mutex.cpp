@@ -12,7 +12,8 @@ namespace gothreads {
     void mutex::lock() {
         if (_locked.test_and_set(std::memory_order_acquire)) {
             //TODO Yield to scheduler
-            _thread_pool->wait_for_mutex(std::this_thread::get_id(), this);
+            _mutex_control->wait_for_mutex(this, _thread_pool->current_task_id());
+            _thread_pool->yield_task(std::this_thread::get_id(), detail::task_state::reschedule);
         }
     }
 

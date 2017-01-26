@@ -1,5 +1,6 @@
 #pragma once
 #include "thread_pool.h"
+#include "mutex_control.h"
 #include "service_locator.h"
 
 namespace gothreads {
@@ -8,6 +9,7 @@ namespace gothreads {
         protected:
             static service_locator _service_locator;
             std::shared_ptr<thread_pool> _thread_pool;
+            std::shared_ptr<mutex_control> _mutex_control;
 
         public:
             base();

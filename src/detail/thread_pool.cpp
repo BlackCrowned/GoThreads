@@ -6,7 +6,6 @@ namespace gothreads {
         thread_pool::thread_pool() :
         _worker_threads(),
         _thread_id_table(),
-        _mutex_control(),
         _max_threads(4),
         _id(1)
         {
@@ -23,16 +22,16 @@ namespace gothreads {
             _worker_threads[_thread_id_table[id]].yield_task(state);
         }
 
-        void thread_pool::wait_for_mutex(ThreadIdType const& id, mutex const* mutex) {
-            auto task_id = _worker_threads[_thread_id_table[id]].current_tasks();
-
-            _mutex_control.wait_for_mutex(mutex, task_id);
-        
-            _worker_threads[_thread_id_table[id]].reschedule_task();
-        }
-
         size_t thread_pool::active_threads() {
             return _worker_threads.size();
+        }
+
+        thread_pool::IdType thread_pool::current_task_id() const {
+            return current_task_id(std::this_thread::get_id());
+        }
+
+        thread_pool::IdType thread_pool::current_task_id(ThreadIdType const& id) const {
+            return _worker_threads.at(_thread_id_table.at(id)).get_task_pool().current().id();
         }
 
         worker_thread& thread_pool::_get_worker_thread() {
