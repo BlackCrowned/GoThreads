@@ -22,8 +22,7 @@ namespace gothreads {
             _worker_threads[_thread_id_table[id]].yield_task();
         }
 
-        void thread_pool::wait_for_mutex(ThreadIdType const& id, std::shared_ptr<mutex> mutex) {
-            
+        void thread_pool::wait_for_mutex(ThreadIdType const& id, mutex const* mutex) {
         }
 
         size_t thread_pool::active_threads() {

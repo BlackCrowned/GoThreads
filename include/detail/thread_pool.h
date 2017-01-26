@@ -22,7 +22,7 @@ namespace gothreads {
             void schedule_task(task&& new_task);
             void yield_task(ThreadIdType const& id);
 
-            void wait_for_mutex(ThreadIdType const& id, std::shared_ptr<mutex> mutex);
+            void wait_for_mutex(ThreadIdType const& id, mutex const* mutex);
 
             size_t active_threads();
         private:
