@@ -47,6 +47,8 @@ namespace gothreads
 
             void yield(task_state state = task_state::waiting);
         private:
+            void state(task_state state);
+            
             static void _cdecl _entry_point(task* t);
             static void _cdecl _return_point(task* t);
 

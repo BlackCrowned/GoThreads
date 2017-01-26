@@ -59,6 +59,9 @@ namespace gothreads {
             assembler::swap_context(_scheduler_context, _task_context);
         }
 
+        void task::state(task_state state) {
+            _task_state = state;
+        }
 
         void task::_entry_point(task* t) {
             t->_task_state = task_state::running;
