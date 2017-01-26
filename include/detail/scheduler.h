@@ -1,12 +1,12 @@
 #pragma once
 #include <condition_variable>
 #include "task_data.h"
-#include "message_queue.h"
 
 namespace gothreads {
     namespace detail {
 
         class task_pool;
+        class message_queue;
 
         class scheduler {
             task_pool* _task_pool;
