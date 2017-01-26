@@ -54,7 +54,7 @@ namespace gothreads
 
             void exec(task_data* ptr);
 
-            void yield(task_state state = task_state::waiting);
+            void yield(task_state state);
         private:
             void state(task_state state);
             

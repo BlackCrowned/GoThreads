@@ -24,8 +24,8 @@ namespace gothreads {
             _sender_queue.send(std::make_unique<messages::add_task>(std::forward<task>(new_task)));
         }
 
-        void worker_thread::yield_task() const {
-            _task_pool.current().yield();
+        void worker_thread::yield_task(task_state state) const {
+            _task_pool.current().yield(state);
         }
 
         void worker_thread::wait_for_mutex(mutex const* mutex) {

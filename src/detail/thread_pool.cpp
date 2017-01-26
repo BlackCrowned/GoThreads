@@ -19,8 +19,8 @@ namespace gothreads {
             t.schedule_task(std::forward<task>(new_task));
         }
 
-        void thread_pool::yield_task(ThreadIdType const& id) {
-            _worker_threads[_thread_id_table[id]].yield_task();
+        void thread_pool::yield_task(ThreadIdType const& id, task_state state) {
+            _worker_threads[_thread_id_table[id]].yield_task(state);
         }
 
         void thread_pool::wait_for_mutex(ThreadIdType const& id, mutex const* mutex) {
