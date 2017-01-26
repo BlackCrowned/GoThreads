@@ -36,6 +36,14 @@ namespace gothreads {
             _task_pool.current().yield(task_state::reschedule);
         }
 
+        task_pool const& worker_thread::get_task_pool() const {
+            return _task_pool;
+        }
+
+        task_pool& worker_thread::get_task_pool() {
+            return _task_pool;
+        }
+
         size_t worker_thread::current_tasks() const {
             return _task_pool.size();
         }
