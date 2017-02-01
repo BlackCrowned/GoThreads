@@ -49,6 +49,7 @@ namespace gothreads {
 
         }
         
+        template<class IdType>
         class message_queue {
             std::queue<std::unique_ptr<message>> _queue;
 
@@ -59,12 +60,12 @@ namespace gothreads {
 
         public:
             message_queue();
-            message_queue(message_queue const& mq) = delete;
-            message_queue(message_queue&& mq) noexcept;
+            message_queue(message_queue<IdType> const& mq) = delete;
+            message_queue(message_queue<IdType>&& mq) noexcept;
 
-            message_queue& operator=(message_queue&& mq) noexcept;
+            message_queue& operator=(message_queue<IdType>&& mq) noexcept;
 
-            void send(std::unique_ptr<message>&& msg);
+            void send(IdType id, std::unique_ptr<message>&& msg);
             std::unique_ptr<message> receive();
 
             bool empty() const;

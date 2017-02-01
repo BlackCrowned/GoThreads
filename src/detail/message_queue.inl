@@ -1,6 +1,73 @@
 namespace gothreads {
     namespace detail {
         
+        template<class IdType>
+        message_queue<IdType>::message_queue() :
+            _queue(),
+            _mutex(),
+            _cv(),
+            _receiver_asleep(false)
+        {
+
+        }
+
+        template<class IdType>
+        message_queue<IdType>::message_queue(message_queue<IdType>&& mq) noexcept :
+        _queue(std::move(mq._queue)),
+            _mutex(),
+            _cv(),
+            _receiver_asleep(std::move(mq._receiver_asleep))
+        {
+
+        }
+
+        template<class IdType>
+        message_queue& message_queue<IdType>::operator=(message_queue<IdType>&& mq) noexcept {
+            _queue = std::move(mq._queue);
+            _receiver_asleep = std::move(mq._receiver_asleep);
+
+            return *this;
+        }
+
+        template<class IdType>
+        void message_queue<IdType>::send(IdType id, std::unique_ptr<message>&& msg) {
+            std::unique_lock<std::mutex> lk(_mutex); //Lock
+            _queue.push(std::forward<std::unique_ptr<message>>(msg));
+            if (_receiver_asleep) {
+                _receiver_asleep = false;
+                lk.unlock();                        //Unlock
+                _cv.notify_one();                   //Notify
+            }
+            else {
+                lk.unlock();                        //Unlock
+            }
+        }
+
+        template<class IdType>
+        std::unique_ptr<message> message_queue<IdType>::receive() {
+            std::lock_guard<std::mutex> lk(_mutex);
+            std::unique_ptr<message> message = std::move(_queue.front());
+            _queue.pop();
+
+            return message;
+        }
+
+        template<class IdType>
+        bool message_queue<IdType>::empty() const {
+            std::lock_guard<std::mutex> lk(_mutex);
+            return _queue.empty();
+        }
+
+        template<class IdType>
+        void message_queue<IdType>::wait() {
+            std::unique_lock<std::mutex> lk(_mutex);
+
+            _receiver_asleep = true;
+            _cv.wait(lk);
+
+            lk.unlock();
+        }
+
         template <class IdType>
         one_to_many_message_queue<IdType>::one_to_many_message_queue() :
         _container(),
