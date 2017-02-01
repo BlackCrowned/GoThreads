@@ -15,6 +15,9 @@ namespace gothreads {
             _mutex_control->wait_for_mutex(this, _thread_pool->current_task_id());
             _thread_pool->yield_task(std::this_thread::get_id(), detail::task_state::reschedule);
         }
+        else {
+            _mutex_control->lock_task(this, _thread_pool->current_task_id());
+        }
     }
 
     bool mutex::try_lock() {
@@ -23,5 +26,6 @@ namespace gothreads {
 
     void mutex::unlock() {
         _locked.clear(std::memory_order_release);
+        _mutex_control->unlock_task(this);
     }
 }
