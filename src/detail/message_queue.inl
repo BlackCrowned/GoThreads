@@ -126,6 +126,12 @@ namespace gothreads {
         }
 
         template <class IdType>
+        typename message_queue_wrapper<IdType>::MessageQueueType message_queue_wrapper<IdType>::message_queue() const {
+            return _mq;
+        }
+
+
+        template <class IdType>
         IdType message_queue_wrapper<IdType>::id() const {
             return _id;
         }
