@@ -100,6 +100,8 @@ namespace gothreads {
             ~message_queue_wrapper() noexcept;
 
             message_queue_wrapper<IdType>& operator=(message_queue_wrapper<IdType>&& mq) noexcept;
+
+            IdType id() const;
             
             void send(IdType id, MessageType&& msg);
             MessageType&& receive();

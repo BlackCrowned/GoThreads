@@ -126,6 +126,12 @@ namespace gothreads {
         }
 
         template <class IdType>
+        IdType message_queue_wrapper<IdType>::id() const {
+            return _id;
+        }
+
+
+        template <class IdType>
         void message_queue_wrapper<IdType>::send(IdType id, MessageType&& msg) {
             _mq->send(id, std::forward<MessageType>(msg));
         }
