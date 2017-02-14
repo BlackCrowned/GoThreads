@@ -7,6 +7,7 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <winerror.h>
+#include <algorithm>
 
 namespace gothreads {
     namespace detail {
@@ -51,7 +52,10 @@ namespace gothreads {
         
         template<class IdType>
         class message_queue {
-            std::queue<std::unique_ptr<message>> _queue;
+            using QueueType = std::queue<std::shared_ptr<message>>;
+            using ContainerType = std::vector<std::unique_ptr<QueueType>>;
+            
+            ContainerType _container;
 
             mutable std::mutex _mutex;
             std::condition_variable _cv;
@@ -63,14 +67,21 @@ namespace gothreads {
             message_queue(message_queue<IdType> const& mq) = delete;
             message_queue(message_queue<IdType>&& mq) noexcept;
 
-            message_queue& operator=(message_queue<IdType>&& mq) noexcept;
+            message_queue<IdType>& operator=(message_queue<IdType>&& mq) noexcept;
 
-            void send(IdType id, std::unique_ptr<message>&& msg);
-            std::unique_ptr<message> receive();
+            void send(IdType id, std::shared_ptr<message>&& msg);
+            std::shared_ptr<message> receive(IdType id);
 
-            bool empty() const;
+            IdType register_id();
+            bool unregister_id(IdType id);
+
+            bool empty(IdType id) const;
 
             void wait();
+
+        private:
+
+            ContainerType::iterator _find_queue(IdType id);
         };
 
         template<class IdType>

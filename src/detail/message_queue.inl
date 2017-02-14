@@ -3,40 +3,41 @@ namespace gothreads {
         
         template<class IdType>
         message_queue<IdType>::message_queue() :
-            _queue(),
-            _mutex(),
-            _cv(),
-            _receiver_asleep(false)
+        _container(),
+        _mutex(),
+        _cv(),
+        _receiver_asleep(false)
         {
 
         }
 
         template<class IdType>
         message_queue<IdType>::message_queue(message_queue<IdType>&& mq) noexcept :
-        _queue(std::move(mq._queue)),
-            _mutex(),
-            _cv(),
-            _receiver_asleep(std::move(mq._receiver_asleep))
+        _container(std::move(mq._container)),
+        _mutex(),
+        _cv(),
+        _receiver_asleep(std::move(mq._receiver_asleep))
         {
 
         }
 
         template<class IdType>
-        message_queue& message_queue<IdType>::operator=(message_queue<IdType>&& mq) noexcept {
-            _queue = std::move(mq._queue);
+        message_queue<IdType>& message_queue<IdType>::operator=(message_queue<IdType>&& mq) noexcept {
+            _container = std::move(mq._container);
             _receiver_asleep = std::move(mq._receiver_asleep);
 
             return *this;
         }
 
         template<class IdType>
-        void message_queue<IdType>::send(IdType id, std::unique_ptr<message>&& msg) {
+        void message_queue<IdType>::send(IdType id, std::shared_ptr<message>&& msg) {
             std::unique_lock<std::mutex> lk(_mutex); //Lock
-            _queue.push(std::forward<std::unique_ptr<message>>(msg));
+            auto q = *_find_queue(id);
+            q->push(msg);
             if (_receiver_asleep) {
                 _receiver_asleep = false;
                 lk.unlock();                        //Unlock
-                _cv.notify_one();                   //Notify
+                _cv.notify_all();                   //Notify
             }
             else {
                 lk.unlock();                        //Unlock
@@ -44,18 +45,38 @@ namespace gothreads {
         }
 
         template<class IdType>
-        std::unique_ptr<message> message_queue<IdType>::receive() {
+        std::shared_ptr<message> message_queue<IdType>::receive(IdType id) {
             std::lock_guard<std::mutex> lk(_mutex);
-            std::unique_ptr<message> message = std::move(_queue.front());
-            _queue.pop();
+            auto q = *_find_queue(id);
+            auto msg = q->front();
+            q->pop();
 
-            return message;
+            return msg;
         }
 
+        template <class IdType>
+        IdType message_queue<IdType>::register_id() {
+            auto q = std::make_unique<QueueType>();
+            _container.emplace_back(q);
+
+            return static_cast<IdType>(q.get());
+        }
+
+        template <class IdType>
+        bool message_queue<IdType>::unregister_id(IdType id) {
+            if (empty(id)) {
+                _container.erase(_find_queue(id));
+                return true;
+            }
+            return false;
+        }
+
+
         template<class IdType>
-        bool message_queue<IdType>::empty() const {
+        bool message_queue<IdType>::empty(IdType id) const {
             std::lock_guard<std::mutex> lk(_mutex);
-            return _queue.empty();
+            auto q = *_find_queue(id);
+            return q->empty();
         }
 
         template<class IdType>
@@ -67,6 +88,22 @@ namespace gothreads {
 
             lk.unlock();
         }
+
+        template <class IdType>
+        auto message_queue<IdType>::_find_queue(IdType id) -> ContainerType::iterator{
+            auto it = std::find(_container.begin(), _container.end(), [id](std::unique_ptr<QueueType> const& q)
+            {
+                return static_cast<IdType>(q.get()) == id;
+            });
+
+            if (it != _container.end()) {
+                return it;
+            }
+            throw "No queue with requested id registered";
+
+            return it;
+        }
+
 
         template <class IdType>
         one_to_many_message_queue<IdType>::one_to_many_message_queue() :
