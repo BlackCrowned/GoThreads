@@ -70,7 +70,7 @@ namespace gothreads {
             message_queue<IdType>& operator=(message_queue<IdType>&& mq) noexcept;
 
             void send(IdType id, std::shared_ptr<message>&& msg);
-            std::shared_ptr<message> receive(IdType id);
+            std::shared_ptr<message>&& receive(IdType id);
 
             IdType register_id();
             bool unregister_id(IdType id);
@@ -82,6 +82,31 @@ namespace gothreads {
         private:
 
             ContainerType::iterator _find_queue(IdType id);
+        };
+
+        template<class IdType>
+        class message_queue_wrapper {
+            using MessageType = decltype(message_queue<IdType>().receive());
+            using MessageQueueType = std::shared_ptr<message_queue<IdType>>;
+
+            MessageQueueType _mq;
+            IdType _id;
+
+        public:
+            explicit message_queue_wrapper(MessageQueueType mq);
+            message_queue_wrapper(message_queue_wrapper<IdType> const& mqw) = delete;
+            message_queue_wrapper(message_queue_wrapper<IdType>&& mqw) noexcept = default;
+
+            ~message_queue_wrapper() noexcept;
+
+            message_queue_wrapper<IdType>& operator=(message_queue_wrapper<IdType>&& mq) noexcept;
+            
+            void send(IdType id, MessageType&& msg);
+            MessageType&& receive();
+
+            bool empty();
+
+            void wait();
         };
 
         template<class IdType>

@@ -33,7 +33,7 @@ namespace gothreads {
         void message_queue<IdType>::send(IdType id, std::shared_ptr<message>&& msg) {
             std::unique_lock<std::mutex> lk(_mutex); //Lock
             auto q = *_find_queue(id);
-            q->push(msg);
+            q->push(std::forward<std::shared_ptr<message>>(msg));
             if (_receiver_asleep) {
                 _receiver_asleep = false;
                 lk.unlock();                        //Unlock
@@ -45,13 +45,13 @@ namespace gothreads {
         }
 
         template<class IdType>
-        std::shared_ptr<message> message_queue<IdType>::receive(IdType id) {
+        std::shared_ptr<message>&& message_queue<IdType>::receive(IdType id) {
             std::lock_guard<std::mutex> lk(_mutex);
             auto q = *_find_queue(id);
-            auto msg = q->front();
+            auto msg = std::move(q->front());
             q->pop();
 
-            return msg;
+            return std::move(msg);
         }
 
         template <class IdType>
@@ -104,7 +104,47 @@ namespace gothreads {
             return it;
         }
 
+        template <class IdType>
+        message_queue_wrapper<IdType>::message_queue_wrapper(MessageQueueType mq) :
+        _mq(mq),
+        _id(_mq->register_id())
+        {
+            
+        }
 
+        template <class IdType>
+        message_queue_wrapper<IdType>::~message_queue_wrapper() noexcept {
+            if (_mq.use_count()) {
+                _mq->unregister_id(_id);
+            }
+        }
+
+        template <class IdType>
+        message_queue_wrapper<IdType>& message_queue_wrapper<IdType>::operator=(message_queue_wrapper<IdType>&& mqw) noexcept {
+            _mq = std::move(mqw._mq);
+            _id = std::move(mqw._id);
+        }
+
+        template <class IdType>
+        void message_queue_wrapper<IdType>::send(IdType id, MessageType&& msg) {
+            _mq->send(id, std::forward<MessageType>(msg));
+        }
+
+        template <class IdType>
+        typename message_queue_wrapper<IdType>::MessageType&& message_queue_wrapper<IdType>::receive() {
+            return std::forward<MessageType>(_mq->receive(_id));
+        }
+
+        template <class IdType>
+        bool message_queue_wrapper<IdType>::empty() {
+            return _mq->empty(_id);
+        }
+
+        template <class IdType>
+        void message_queue_wrapper<IdType>::wait() {
+            return _mq->wait();
+        }
+        
         template <class IdType>
         one_to_many_message_queue<IdType>::one_to_many_message_queue() :
         _container(),
