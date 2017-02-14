@@ -15,12 +15,19 @@ namespace gothreads
             init,
             waiting,
             running,
-            stopped
+            blocking,
+            stopped,
+            reschedule
         };
 
         class task {
+            typedef size_t IdType;
+            
+            friend class scheduler;
+            
             const size_t _default_stack_size = 1 << 15;
-
+            static IdType _id_counter;
+            IdType _id;
 
             std::function<void()> _function_entry_point;
             task_state _task_state;
@@ -40,16 +47,18 @@ namespace gothreads
 
             task_state state() const;
 
+            IdType id() const;
+
             bool executable() const;
 
             void exec(task_data* ptr);
 
-            void yield();
-
+            void yield(task_state state);
         private:
+            void state(task_state state);
+            
             static void _cdecl _entry_point(task* t);
             static void _cdecl _return_point(task* t);
-            static void _cdecl _yield_point(task* t);
 
             template <class Allocator = std::allocator<stack::Type>> void _setup_context();
             void _update_context();

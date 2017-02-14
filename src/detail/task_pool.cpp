@@ -34,6 +34,10 @@ namespace gothreads {
             return task();
         }
 
+        task& task_pool::current() {
+            return _it->second;
+        }
+
         task& task_pool::current() const {
             return _it->second;
         }
@@ -49,6 +53,14 @@ namespace gothreads {
             else {
                 assert(false);
             }
+        }
+
+        task task_pool::release_current_task() {
+            auto t = std::move(current());
+            
+            erase_current_task();
+
+            return t;
         }
 
         void task_pool::add(task&& new_task) {

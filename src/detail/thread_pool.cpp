@@ -18,12 +18,20 @@ namespace gothreads {
             t.schedule_task(std::forward<task>(new_task));
         }
 
-        void thread_pool::yield_task(ThreadIdType const& id) {
-            _worker_threads[_thread_id_table[id]].yield_task();
+        void thread_pool::yield_task(ThreadIdType const& id, task_state state) {
+            _worker_threads[_thread_id_table[id]].yield_task(state);
         }
 
         size_t thread_pool::active_threads() {
             return _worker_threads.size();
+        }
+
+        thread_pool::IdType thread_pool::current_task_id() const {
+            return current_task_id(std::this_thread::get_id());
+        }
+
+        thread_pool::IdType thread_pool::current_task_id(ThreadIdType const& id) const {
+            return _worker_threads.at(_thread_id_table.at(id)).get_task_pool().current().id();
         }
 
         worker_thread& thread_pool::_get_worker_thread() {

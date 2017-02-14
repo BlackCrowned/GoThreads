@@ -1,11 +1,15 @@
 ﻿#include "../../include/detail/task.h"
 #include "../../include/detail/asm/imports.h"
+#include "../../include/detail/scheduler.h"
 #include <iostream>
 
 namespace gothreads {
     namespace detail {
 
+        task::IdType task::_id_counter = 0;
+
         task::task() :
+            _id(++_id_counter),
             _function_entry_point(),
             _task_state(task_state::empty),
             _stack(),
@@ -16,6 +20,7 @@ namespace gothreads {
         }
 
         task::task(const task& t) :
+            _id(t._id),
             _function_entry_point(t._function_entry_point),
             _task_state(t._task_state),
             _stack(stack::copy(t._stack)),
@@ -27,6 +32,7 @@ namespace gothreads {
         }
 
         task::task(task&& t) noexcept :
+            _id(std::move(t._id)),
             _function_entry_point(std::move(t._function_entry_point)),
             _task_state(std::move(t._task_state)),
             _stack(std::move(t._stack)),
@@ -41,8 +47,12 @@ namespace gothreads {
             return _task_state;
         }
 
+        task::IdType task::id() const {
+            return _id;
+        }
+
         bool task::executable() const {
-            return _task_state == task_state::waiting && _task_state != task_state::empty;
+            return _task_state == task_state::waiting;
         }
 
         void task::exec(task_data* ptr) {
@@ -52,8 +62,15 @@ namespace gothreads {
             assembler::swap_context(_task_context, ptr);
         }
 
-        void task::yield() {
-            _yield_point(this);
+        void task::yield(task_state state) {
+            //Set state to waiting
+            _task_state = state;
+
+            assembler::swap_context(_scheduler_context, _task_context);
+        }
+
+        void task::state(task_state state) {
+            _task_state = state;
         }
 
         void task::_entry_point(task* t) {
@@ -66,13 +83,6 @@ namespace gothreads {
         void task::_return_point(task* t) {
             //Cease and desist
             t->_task_state = task_state::stopped;
-
-            assembler::swap_context(t->_scheduler_context, t->_task_context);
-        }
-
-        void task::_yield_point(task* t) {
-            //Set state to waiting
-            t->_task_state = task_state::waiting;
 
             assembler::swap_context(t->_scheduler_context, t->_task_context);
         }

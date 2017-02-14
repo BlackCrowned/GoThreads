@@ -10,5 +10,12 @@ namespace gothreads {
             }
             return _thread_pool;
         }
+
+        std::shared_ptr<mutex_control> service_locator::get_mutex_control() const {
+            if (_mutex_control.use_count() == 0) {
+                _mutex_control = std::make_shared<mutex_control>();
+            }
+            return  _mutex_control;
+        }
     }
 }

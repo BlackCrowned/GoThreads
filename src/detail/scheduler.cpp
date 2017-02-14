@@ -1,14 +1,14 @@
 #include "../../include/detail/scheduler.h"
 
 #include "../../include/detail/task_pool.h"
+#include "../../include/detail/message_queue.h"
 
 namespace gothreads {
     namespace detail {
 
-        scheduler::scheduler(task_pool* ptask_pool, message_queue* receiver_queue, message_queue* sender_queue) :
+        scheduler::scheduler(task_pool* ptask_pool, std::shared_ptr<message_queue<size_t>> mq_ptr) :
         _task_pool(ptask_pool),
-        _receiver_queue(receiver_queue),
-        _sender_queue(sender_queue),
+        _mq(mq_ptr),
         _task_data()
         {
             
@@ -20,8 +20,8 @@ namespace gothreads {
 
         void scheduler::run() {
             while(true) {
-                if (!_receiver_queue->empty()) {
-                    auto msg = _receiver_queue->receive();
+                if (!_mq.empty()) {
+                    auto msg = _mq.receive();
                     if (msg->type() == typeid(messages::exit_thread)) {
                         auto m = static_cast<messages::exit_thread*>(msg.get());
                         if (m->force() == true)
@@ -43,12 +43,27 @@ namespace gothreads {
                     {
                         _task_pool->erase_current_task();
                     }
+
+                    switch(task.state()) {
+                        case task_state::stopped:
+                            _task_pool->erase_current_task();
+                            break;
+                        case task_state::reschedule:
+                            task.state(task_state::blocking);
+                            _task_pool->erase_current_task();
+                            break;
+                        default: break;
+                    }
                     
                 }
                 else {
-                    _receiver_queue->wait();
+                    _mq.wait();
                 }
             }
+        }
+
+        size_t scheduler::message_queue_id() const {
+            return _mq.id();
         }
     }
 }
