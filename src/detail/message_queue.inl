@@ -32,7 +32,7 @@ namespace gothreads {
         template<class IdType>
         void message_queue<IdType>::send(IdType id, std::shared_ptr<message>&& msg) {
             std::unique_lock<std::mutex> lk(_mutex); //Lock
-            auto q = *_find_queue(id);
+            auto& q = *_find_queue(id);
             q->push(std::forward<std::shared_ptr<message>>(msg));
             if (_receiver_asleep) {
                 _receiver_asleep = false;
@@ -45,10 +45,10 @@ namespace gothreads {
         }
 
         template<class IdType>
-        std::shared_ptr<message>&& message_queue<IdType>::receive(IdType id) {
+        std::shared_ptr<message> message_queue<IdType>::receive(IdType id) {
             std::lock_guard<std::mutex> lk(_mutex);
-            auto q = *_find_queue(id);
-            auto msg = std::move(q->front());
+            auto& q = *_find_queue(id);
+            auto msg = q->front();
             q->pop();
 
             return std::move(msg);
@@ -57,9 +57,10 @@ namespace gothreads {
         template <class IdType>
         IdType message_queue<IdType>::register_id() {
             auto q = std::make_unique<QueueType>();
-            _container.emplace_back(q);
+            auto id = reinterpret_cast<IdType>(q.get());
+            _container.emplace_back(std::move(q));
 
-            return static_cast<IdType>(q.get());
+            return id;
         }
 
         template <class IdType>
@@ -75,7 +76,7 @@ namespace gothreads {
         template<class IdType>
         bool message_queue<IdType>::empty(IdType id) const {
             std::lock_guard<std::mutex> lk(_mutex);
-            auto q = *_find_queue(id);
+            auto& q = *_cfind_queue(id);
             return q->empty();
         }
 
@@ -91,12 +92,27 @@ namespace gothreads {
 
         template <class IdType>
         auto message_queue<IdType>::_find_queue(IdType id) -> ContainerType::iterator{
-            auto it = std::find(_container.begin(), _container.end(), [id](std::unique_ptr<QueueType> const& q)
+            auto it = std::find_if(_container.begin(), _container.end(), [id](std::unique_ptr<QueueType> const& q)
             {
-                return static_cast<IdType>(q.get()) == id;
+                return reinterpret_cast<IdType>(q.get()) == id;
             });
 
             if (it != _container.end()) {
+                return it;
+            }
+            throw "No queue with requested id registered";
+
+            return it;
+        }
+
+        template <class IdType>
+        auto message_queue<IdType>::_cfind_queue(IdType id) const -> ContainerType::const_iterator{
+            auto it = std::find_if(_container.cbegin(), _container.cend(), [id](std::unique_ptr<QueueType> const& q)
+            {
+                return reinterpret_cast<IdType>(q.get()) == id;
+            });
+
+            if (it != _container.cend()) {
                 return it;
             }
             throw "No queue with requested id registered";
@@ -143,8 +159,9 @@ namespace gothreads {
         }
 
         template <class IdType>
-        typename message_queue_wrapper<IdType>::MessageType&& message_queue_wrapper<IdType>::receive() {
-            return std::forward<MessageType>(_mq->receive(_id));
+        typename message_queue_wrapper<IdType>::MessageType message_queue_wrapper<IdType>::receive() {
+            auto msg = _mq->receive(_id);
+            return msg;
         }
 
         template <class IdType>

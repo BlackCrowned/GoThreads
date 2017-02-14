@@ -8,6 +8,7 @@
 #include <unordered_set>
 #include <winerror.h>
 #include <algorithm>
+#include <algorithm>
 
 namespace gothreads {
     namespace detail {
@@ -70,7 +71,7 @@ namespace gothreads {
             message_queue<IdType>& operator=(message_queue<IdType>&& mq) noexcept;
 
             void send(IdType id, std::shared_ptr<message>&& msg);
-            std::shared_ptr<message>&& receive(IdType id);
+            std::shared_ptr<message> receive(IdType id);
 
             IdType register_id();
             bool unregister_id(IdType id);
@@ -82,11 +83,12 @@ namespace gothreads {
         private:
 
             ContainerType::iterator _find_queue(IdType id);
+            ContainerType::const_iterator _cfind_queue(IdType id) const;
         };
 
         template<class IdType>
         class message_queue_wrapper {
-            using MessageType = decltype(message_queue<IdType>().receive());
+            using MessageType = decltype(message_queue<IdType>().receive(IdType()));
             using MessageQueueType = std::shared_ptr<message_queue<IdType>>;
 
             MessageQueueType _mq;
@@ -105,7 +107,7 @@ namespace gothreads {
             IdType id() const;
             
             void send(IdType id, MessageType&& msg);
-            MessageType&& receive();
+            MessageType receive();
 
             bool empty();
 
