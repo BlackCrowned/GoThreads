@@ -5,23 +5,23 @@ namespace gothreads {
     namespace detail {
 
         worker_thread::worker_thread() :
-            _thread(),
-            _task_pool(),
-            _scheduler(&_task_pool, &_sender_queue, &_receiver_queue),
-            _sender_queue(),
-            _receiver_queue()
+        _thread(),
+        _task_pool(),
+        _mq(std::make_shared<message_queue<size_t>>()),
+        _scheduler(&_task_pool, _mq.message_queue()),
+        _scheduler_mq_id(_scheduler.message_queue_id())
         {
             generic::delegate<void()> del(this, &worker_thread::_thread_entry);
             _thread = std::move(std::thread(del));
         }
 
         worker_thread::~worker_thread() {
-            _sender_queue.send(std::make_unique<messages::exit_thread>(true));
+            _mq.send(_scheduler_mq_id, std::make_unique<messages::exit_thread>(true));
             _thread.join();
         }
 
         void worker_thread::schedule_task(task&& new_task) {
-            _sender_queue.send(std::make_unique<messages::add_task>(std::forward<task>(new_task)));
+            _mq.send(_scheduler_mq_id, std::make_unique<messages::add_task>(std::forward<task>(new_task)));
         }
 
         void worker_thread::yield_task(task_state state) const {
