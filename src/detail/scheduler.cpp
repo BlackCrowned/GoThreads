@@ -6,10 +6,9 @@
 namespace gothreads {
     namespace detail {
 
-        scheduler::scheduler(task_pool* ptask_pool, message_queue* receiver_queue, message_queue* sender_queue) :
+        scheduler::scheduler(task_pool* ptask_pool, std::shared_ptr<message_queue<size_t>> mq_ptr) :
         _task_pool(ptask_pool),
-        _receiver_queue(receiver_queue),
-        _sender_queue(sender_queue),
+        _mq(mq_ptr),
         _task_data()
         {
             
@@ -21,8 +20,8 @@ namespace gothreads {
 
         void scheduler::run() {
             while(true) {
-                if (!_receiver_queue->empty()) {
-                    auto msg = _receiver_queue->receive();
+                if (!_mq.empty()) {
+                    auto msg = _mq.receive();
                     if (msg->type() == typeid(messages::exit_thread)) {
                         auto m = static_cast<messages::exit_thread*>(msg.get());
                         if (m->force() == true)
@@ -58,9 +57,13 @@ namespace gothreads {
                     
                 }
                 else {
-                    _receiver_queue->wait();
+                    _mq.wait();
                 }
             }
+        }
+
+        size_t scheduler::message_queue_id() const {
+            return _mq.id();
         }
     }
 }

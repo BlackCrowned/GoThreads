@@ -5,7 +5,6 @@
 #include <cassert>
 #include "stack.h"
 #include "../../include/detail/task_data.h"
-#include "scheduler.h"
 
 namespace gothreads
 {

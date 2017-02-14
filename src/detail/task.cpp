@@ -1,5 +1,6 @@
 ﻿#include "../../include/detail/task.h"
 #include "../../include/detail/asm/imports.h"
+#include "../../include/detail/scheduler.h"
 #include <iostream>
 
 namespace gothreads {
