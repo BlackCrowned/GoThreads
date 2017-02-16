@@ -115,40 +115,6 @@ namespace gothreads {
 
             void wait();
         };
-
-        template<class IdType>
-        class one_to_many_message_queue {
-            using MessageType = std::unique_ptr<message>;
-            
-            std::unordered_map<IdType, std::queue<MessageType>> _container;
-
-            mutable std::mutex _mutex;
-            mutable std::condition_variable _cv;
-
-            mutable bool _receiver_asleep;
-
-        public:
-            one_to_many_message_queue();
-            one_to_many_message_queue(one_to_many_message_queue const& mq) = delete;
-            one_to_many_message_queue(one_to_many_message_queue&& mq) = delete;
-
-            void register_receiver(IdType receiver);
-            void unregister_receiver(IdType receiver);
-
-            void broadcast(MessageType const& msg);
-
-            void send(MessageType&& msg, IdType receiver);
-
-            MessageType receive(IdType receiver);
-
-            bool empty(IdType receiver) const;
-
-            void wait() const;
-
-        private:
-            void _conditional_notify(std::unique_lock<std::mutex>& lk) const;
-            void _check_receiver_exists(IdType const& receiver) const;
-        };
     }
 }
 
