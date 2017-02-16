@@ -44,6 +44,25 @@ namespace gothreads {
             }
         }
 
+        template <class IdType>
+        void message_queue<IdType>::broadcast(std::shared_ptr<message>&& msg) {
+            std::unique_lock<std::mutex> lk(_mutex); //Lock
+
+            for (auto& q : _container) {
+                q->push(msg);
+            }
+
+            if (_receiver_asleep) {
+                _receiver_asleep = false;
+                lk.unlock();                        //Unlock
+                _cv.notify_all();                   //Notify
+            }
+            else {
+                lk.unlock();                        //Unlock
+            }
+        }
+
+
         template<class IdType>
         std::shared_ptr<message> message_queue<IdType>::receive(IdType id) {
             std::lock_guard<std::mutex> lk(_mutex);
@@ -156,6 +175,11 @@ namespace gothreads {
         template <class IdType>
         void message_queue_wrapper<IdType>::send(IdType id, MessageType&& msg) {
             _mq->send(id, std::forward<MessageType>(msg));
+        }
+
+        template <class IdType>
+        void message_queue_wrapper<IdType>::broadcast(MessageType&& msg) {
+            _mq->broadcast(std::forward<MessageType>(msg));
         }
 
         template <class IdType>

@@ -71,6 +71,7 @@ namespace gothreads {
             message_queue<IdType>& operator=(message_queue<IdType>&& mq) noexcept;
 
             void send(IdType id, std::shared_ptr<message>&& msg);
+            void broadcast(std::shared_ptr<message>&& msg);
             std::shared_ptr<message> receive(IdType id);
 
             IdType register_id();
@@ -107,6 +108,7 @@ namespace gothreads {
             IdType id() const;
             
             void send(IdType id, MessageType&& msg);
+            void broadcast(MessageType&& msg);
             MessageType receive();
 
             bool empty();
