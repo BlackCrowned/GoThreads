@@ -39,11 +39,6 @@ namespace gothreads {
                         task.exec(&_task_data); //TODO Current Context
                     }
 
-                    if (task.state() == task_state::stopped)
-                    {
-                        _task_pool->erase_current_task();
-                    }
-
                     switch(task.state()) {
                         case task_state::stopped:
                             _task_pool->erase_current_task();
