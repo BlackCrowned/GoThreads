@@ -77,6 +77,8 @@ namespace gothreads {
         IdType message_queue<IdType>::register_id() {
             auto q = std::make_unique<QueueType>();
             auto id = reinterpret_cast<IdType>(q.get());
+
+            std::lock_guard<std::mutex> lk(_mutex);
             _container.emplace_back(std::move(q));
 
             return id;
@@ -85,6 +87,7 @@ namespace gothreads {
         template <class IdType>
         bool message_queue<IdType>::unregister_id(IdType id) {
             if (empty(id)) {
+                std::lock_guard<std::mutex> lk(_mutex);
                 _container.erase(_find_queue(id));
                 return true;
             }
