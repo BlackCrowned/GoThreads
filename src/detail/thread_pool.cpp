@@ -6,6 +6,7 @@ namespace gothreads {
         thread_pool::thread_pool() :
         _worker_threads(),
         _thread_id_table(),
+        _mq(new message_queue<size_t>()),
         _max_threads(4),
         _id(1)
         {
@@ -19,10 +20,10 @@ namespace gothreads {
         }
 
         void thread_pool::yield_task(ThreadIdType const& id, task_state state) {
-            _worker_threads[_thread_id_table[id]].yield_task(state);
+            _worker_threads.at(_thread_id_table[id]).yield_task(state);
         }
 
-        size_t thread_pool::active_threads() {
+        size_t thread_pool::active_threads() const {
             return _worker_threads.size();
         }
 
@@ -72,7 +73,7 @@ namespace gothreads {
         }
 
         worker_thread& thread_pool::_allocate_worker_thread() {
-            auto& wt = _worker_threads[++_id];
+            auto& wt = _worker_threads.try_emplace(++_id, _mq).first->second;
             _thread_id_table[wt.id()] = _id;
             return wt;
         }

@@ -17,12 +17,12 @@ namespace gothreads {
             std::thread _thread;
             task_pool _task_pool;
 
-            message_queue_wrapper<size_t> _mq;
+            std::shared_ptr<message_queue<size_t>> _mq;
 
             scheduler _scheduler;
             size_t _scheduler_mq_id;
         public:
-            worker_thread();
+            worker_thread(std::shared_ptr<message_queue<size_t>> mq);
             worker_thread(worker_thread const& wt) = delete;
             worker_thread(worker_thread&& wt) noexcept = delete;
 
@@ -30,7 +30,7 @@ namespace gothreads {
 
             worker_thread& operator=(worker_thread&& wt) noexcept;
 
-            void schedule_task(task&& new_task);
+            void schedule_task(task&& new_task) const;
             void yield_task(task_state state) const;
 
             void wait_for_mutex(mutex const* mutex);
