@@ -6,8 +6,9 @@
 namespace gothreads {
     namespace detail {
 
-        scheduler::scheduler(task_pool* ptask_pool, std::shared_ptr<message_queue<size_t>> mq_ptr) :
+        scheduler::scheduler(task_pool* ptask_pool, mutex_control* pmutex_control, std::shared_ptr<message_queue<size_t>> mq_ptr) :
         _task_pool(ptask_pool),
+        _mutex_control(pmutex_control),
         _mq(mq_ptr),
         _task_data()
         {

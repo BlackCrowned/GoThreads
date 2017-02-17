@@ -17,12 +17,13 @@ namespace gothreads {
             std::thread _thread;
             task_pool _task_pool;
 
+            mutex_control* _mutex_control;
             std::shared_ptr<message_queue<size_t>> _mq;
 
             scheduler _scheduler;
             size_t _scheduler_mq_id;
         public:
-            worker_thread(std::shared_ptr<message_queue<size_t>> mq);
+            worker_thread(mutex_control* pmutex_control, std::shared_ptr<message_queue<size_t>> mq);
             worker_thread(worker_thread const& wt) = delete;
             worker_thread(worker_thread&& wt) noexcept = delete;
 

@@ -6,6 +6,7 @@ namespace gothreads {
         thread_pool::thread_pool() :
         _worker_threads(),
         _thread_id_table(),
+        _mutex_control(),
         _mq(new message_queue<size_t>()),
         _max_threads(4),
         _id(1)
@@ -73,7 +74,7 @@ namespace gothreads {
         }
 
         worker_thread& thread_pool::_allocate_worker_thread() {
-            auto& wt = _worker_threads.try_emplace(++_id, _mq).first->second;
+            auto& wt = _worker_threads.try_emplace(++_id, &_mutex_control, _mq).first->second;
             _thread_id_table[wt.id()] = _id;
             return wt;
         }
