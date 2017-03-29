@@ -30,6 +30,7 @@ namespace gothreads {
             void yield_task(ThreadIdType const& id, task_state state = task_state::waiting);
 
             size_t active_threads() const;
+            void max_threads(size_t n);
 
             IdType current_task_id() const;
             IdType current_task_id(ThreadIdType const& id) const;

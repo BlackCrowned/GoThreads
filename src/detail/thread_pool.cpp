@@ -28,6 +28,10 @@ namespace gothreads {
             return _worker_threads.size();
         }
 
+        void thread_pool::max_threads(size_t n) {
+            _max_threads = n;
+        }
+
         thread_pool::IdType thread_pool::current_task_id() const {
             return current_task_id(std::this_thread::get_id());
         }
