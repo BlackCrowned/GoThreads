@@ -20,6 +20,7 @@ TEST_CASE("Can yield inside of task", "[feature]") {
 }
 
 TEST_CASE("Can use mutexes", "[feature]") {
+    gothreads::max_thread_count(1);
     gothreads::mutex m;
     
     for (size_t i = 0; i < 10; i++) {
