@@ -20,6 +20,8 @@ namespace gothreads
             reschedule
         };
 
+        class message;
+
         class task {
             typedef size_t IdType;
             
@@ -31,6 +33,7 @@ namespace gothreads
 
             std::function<void()> _function_entry_point;
             task_state _task_state;
+            std::shared_ptr<message> _msg;
 
             std::unique_ptr<stack> _stack;
 
@@ -46,6 +49,7 @@ namespace gothreads
             template<class Allocator = std::allocator<stack::Type>> void alloc_stack();
 
             task_state state() const;
+            std::shared_ptr<message> msg();
 
             IdType id() const;
 
@@ -54,8 +58,10 @@ namespace gothreads
             void exec(task_data* ptr);
 
             void yield(task_state state);
+            void yield(std::shared_ptr<message> msg);
         private:
             void state(task_state state);
+            void msg(std::shared_ptr<message> msg);
             
             static void _cdecl _entry_point(task* t);
             static void _cdecl _return_point(task* t);

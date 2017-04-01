@@ -1,6 +1,6 @@
 #include "../dependencies/catch/single_include/catch.hpp"
 #include "../../include/detail/task.h"
-TEST_CASE("Can construct 'task' class", "[constructable]") {
+TEST_CASE("Can construct 'owner' class", "[constructable]") {
     auto t1 = gothreads::detail::task();    //Default constructor
     auto t2 = gothreads::detail::task([]() {return; });
 

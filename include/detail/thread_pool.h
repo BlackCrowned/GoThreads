@@ -15,9 +15,9 @@ namespace gothreads {
             std::unordered_map<IdType, worker_thread> _worker_threads;
             std::unordered_map<ThreadIdType, IdType> _thread_id_table;
 
-            mutex_control _mutex_control;
-
             std::shared_ptr<message_queue<size_t>> _mq;
+
+            mutex_control _mutex_control;
             
             size_t _max_threads;
 
@@ -28,12 +28,15 @@ namespace gothreads {
             thread_pool();
             void schedule_task(task&& new_task);
             void yield_task(ThreadIdType const& id, task_state state = task_state::waiting);
+            void yield_task(ThreadIdType const& id, std::shared_ptr<message> msg);
 
             size_t active_threads() const;
             void max_threads(size_t n);
 
             IdType current_task_id() const;
             IdType current_task_id(ThreadIdType const& id) const;
+
+            mutex_control& get_mutex_control();
         private:
 
             worker_thread& _get_worker_thread();

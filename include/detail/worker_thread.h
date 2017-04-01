@@ -33,6 +33,7 @@ namespace gothreads {
 
             void schedule_task(task&& new_task) const;
             void yield_task(task_state state) const;
+            void yield_task(std::shared_ptr<message> msg) const;
 
             void wait_for_mutex(mutex const* mutex);
 

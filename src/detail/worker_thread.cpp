@@ -29,6 +29,10 @@ namespace gothreads {
             _task_pool.current().yield(state);
         }
 
+        void worker_thread::yield_task(std::shared_ptr<message> msg) const {
+            _task_pool.current().yield(msg);
+        }
+
         void worker_thread::wait_for_mutex(mutex const* mutex) {
             _task_pool.current().yield(task_state::blocking);
         }

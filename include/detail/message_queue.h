@@ -11,6 +11,10 @@
 #include <algorithm>
 
 namespace gothreads {
+    class mutex;
+}
+
+namespace gothreads {
     namespace detail {
 
         class message {
@@ -47,6 +51,33 @@ namespace gothreads {
                 type_info const& type() const override;
 
                 task&& get();
+            };
+
+            class wait_for_mutex : public message {
+            private:
+                mutex const* _m;
+
+            public:
+                explicit wait_for_mutex(mutex const* m);
+                virtual ~wait_for_mutex() = default;
+
+                type_info const& type() const override;
+
+                mutex const* get() const;
+            };
+
+            class unlock_task : public message {
+                task _task;
+                bool _empty;
+
+            public:
+                explicit  unlock_task(task&& t);
+                virtual ~unlock_task() = default;
+
+                type_info const& type() const override;
+
+                task&& get();
+                bool empty();
             };
 
         }

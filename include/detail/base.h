@@ -9,7 +9,6 @@ namespace gothreads {
         protected:
             static service_locator _service_locator;
             std::shared_ptr<thread_pool> _thread_pool;
-            std::shared_ptr<mutex_control> _mutex_control;
 
         public:
             base();

@@ -1,5 +1,3 @@
-#include "../../include/detail/task_data.h"
-
 namespace gothreads {
     namespace detail {
 
@@ -7,6 +5,7 @@ namespace gothreads {
         task::task(Function fn, Args&&... args) :
         _function_entry_point(std::bind(fn, std::forward<Args>(args)...)),
         _task_state(task_state::empty),
+        _msg(),
         _stack(),
         _task_context(nullptr),
         _scheduler_context(nullptr)

@@ -20,6 +20,7 @@ namespace gothreads {
             explicit scheduler(task_pool* ptask_pool, mutex_control* pmutex_control, std::shared_ptr<message_queue<size_t>> mq_ptr);
 
             void init();
+            void schedule_tasks();
 
             void run();
 

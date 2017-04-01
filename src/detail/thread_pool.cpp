@@ -6,8 +6,8 @@ namespace gothreads {
         thread_pool::thread_pool() :
         _worker_threads(),
         _thread_id_table(),
-        _mutex_control(),
         _mq(new message_queue<size_t>()),
+        _mutex_control(_mq),
         _max_threads(4),
         _id(1)
         {
@@ -24,6 +24,10 @@ namespace gothreads {
             _worker_threads.at(_thread_id_table[id]).yield_task(state);
         }
 
+        void thread_pool::yield_task(ThreadIdType const& id, std::shared_ptr<message> msg) {
+            _worker_threads.at(_thread_id_table[id]).yield_task(msg);
+        }
+
         size_t thread_pool::active_threads() const {
             return _worker_threads.size();
         }
@@ -38,6 +42,10 @@ namespace gothreads {
 
         thread_pool::IdType thread_pool::current_task_id(ThreadIdType const& id) const {
             return _worker_threads.at(_thread_id_table.at(id)).get_task_pool().current().id();
+        }
+
+        mutex_control& thread_pool::get_mutex_control() {
+            return _mutex_control;
         }
 
         worker_thread& thread_pool::_get_worker_thread() {
