@@ -4,12 +4,11 @@
 namespace gothreads {
     namespace detail {
 
-        worker_thread::worker_thread(mutex_control* pmutex_control, std::shared_ptr<message_queue<size_t>> mq) :
+        worker_thread::worker_thread(std::shared_ptr<message_queue<size_t>> mq) :
         _thread(),
         _task_pool(),
-        _mutex_control(pmutex_control),
         _mq(mq),
-        _scheduler(&_task_pool, _mutex_control, _mq),
+        _scheduler(&_task_pool, _mq),
         _scheduler_mq_id(_scheduler.message_queue_id())
         {
             generic::delegate<void()> del(this, &worker_thread::_thread_entry);

@@ -12,6 +12,7 @@
 
 namespace gothreads {
     class mutex;
+    class mutex_data;
 }
 
 namespace gothreads {
@@ -55,15 +56,16 @@ namespace gothreads {
 
             class wait_for_mutex : public message {
             private:
-                mutex const* _m;
+                std::unique_lock<std::mutex>& _lock;
+                mutex_data& _mutex_data;
 
             public:
-                explicit wait_for_mutex(mutex const* m);
+                explicit wait_for_mutex(std::unique_lock<std::mutex>& lock, mutex_data& data);
                 virtual ~wait_for_mutex() = default;
 
                 type_info const& type() const override;
 
-                mutex const* get() const;
+                void add_to_mutex_data(task&& t) const;
             };
 
             class unlock_task : public message {

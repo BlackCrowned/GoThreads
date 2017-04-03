@@ -7,7 +7,6 @@ namespace gothreads {
         _worker_threads(),
         _thread_id_table(),
         _mq(new message_queue<size_t>()),
-        _mutex_control(_mq),
         _max_threads(4),
         _id(1)
         {
@@ -44,8 +43,12 @@ namespace gothreads {
             return _worker_threads.at(_thread_id_table.at(id)).get_task_pool().current().id();
         }
 
-        mutex_control& thread_pool::get_mutex_control() {
-            return _mutex_control;
+        void thread_pool::send_message(size_t id, std::shared_ptr<message>&& msg) const {
+            _mq->send(id, std::forward<std::shared_ptr<message>>(msg));
+        }
+
+        void thread_pool::broadcast_message(std::shared_ptr<message>&& msg) const {
+            _mq->broadcast(std::forward<std::shared_ptr<message>>(msg));
         }
 
         worker_thread& thread_pool::_get_worker_thread() {
@@ -86,7 +89,7 @@ namespace gothreads {
         }
 
         worker_thread& thread_pool::_allocate_worker_thread() {
-            auto& wt = _worker_threads.try_emplace(++_id, &_mutex_control, _mq).first->second;
+            auto& wt = _worker_threads.try_emplace(++_id, _mq).first->second;
             _thread_id_table[wt.id()] = _id;
             return wt;
         }

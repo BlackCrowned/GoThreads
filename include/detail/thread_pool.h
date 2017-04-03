@@ -2,7 +2,6 @@
 #include <unordered_map>
 #include "task.h"
 #include "worker_thread.h"
-#include "mutex_control.h"
 
 namespace gothreads {
     namespace detail {
@@ -17,8 +16,6 @@ namespace gothreads {
 
             std::shared_ptr<message_queue<size_t>> _mq;
 
-            mutex_control _mutex_control;
-            
             size_t _max_threads;
 
             IdType _id;
@@ -36,7 +33,8 @@ namespace gothreads {
             IdType current_task_id() const;
             IdType current_task_id(ThreadIdType const& id) const;
 
-            mutex_control& get_mutex_control();
+            void send_message(size_t id, std::shared_ptr<message>&& msg) const;
+            void broadcast_message(std::shared_ptr<message>&& msg) const;
         private:
 
             worker_thread& _get_worker_thread();

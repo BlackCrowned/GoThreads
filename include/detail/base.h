@@ -1,6 +1,5 @@
 #pragma once
 #include "thread_pool.h"
-#include "mutex_control.h"
 #include "service_locator.h"
 
 namespace gothreads {

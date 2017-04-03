@@ -31,9 +31,9 @@ TEST_CASE("Can use mutexes", "[feature]") {
                 //static gothreads::mutex m;
                 m.lock();
                 x++;
-                std::cout << "Locked thread [" << x << "]" << std::endl;
+                //std::cout << "Locked thread [" << x << "]" << std::endl;
                 m.unlock();
-                std::cout << "UnLocked thread" << std::endl;
+                //std::cout << "UnLocked thread" << std::endl;
                 return;
             });
     }
