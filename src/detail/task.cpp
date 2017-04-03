@@ -96,7 +96,8 @@ namespace gothreads {
             t->_task_state = task_state::running;
 
             //Call function
-            t->_function_entry_point();
+            if (t->_function_entry_point)
+                t->_function_entry_point->operator()();
         }
 
         void task::_return_point(task* t) {

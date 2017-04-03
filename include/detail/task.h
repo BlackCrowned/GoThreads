@@ -31,7 +31,7 @@ namespace gothreads
             static IdType _id_counter;
             IdType _id;
 
-            std::function<void()> _function_entry_point;
+            std::shared_ptr<std::function<void()>> _function_entry_point;
             task_state _task_state;
             std::shared_ptr<message> _msg;
 
