@@ -14,11 +14,6 @@ namespace gothreads {
     public:
         yield();
     };
-
-    class max_thread_count : public detail::base {
-    public:
-        max_thread_count(size_t n);
-    };
 }
 
 
