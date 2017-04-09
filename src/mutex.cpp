@@ -3,52 +3,55 @@
 
 namespace gothreads {
 
-    mutex_data::mutex_data() :
-    _locked(false),
-    _owner(0),
-    _queue()
+    namespace detail
     {
+        mutex_data::mutex_data() :
+            _locked(false),
+            _owner(0),
+            _queue()
+        {
 
-    }
-
-    mutex_data::~mutex_data() {
-        if (!empty()) {
-            assert("Mutex still has tasks waiting. Tasks will be destroyed aswell");
         }
-    }
 
-    void mutex_data::locked(bool l) {
-        _locked = l;
-    }
+        mutex_data::~mutex_data() {
+            if (!empty()) {
+                assert("Mutex still has tasks waiting. Tasks will be destroyed aswell");
+            }
+        }
 
-    bool mutex_data::locked() const {
-        return _locked;
-    }
+        void mutex_data::locked(bool l) {
+            _locked = l;
+        }
 
-    void mutex_data::owner(size_t id) {
-        _owner = id;
-    }
+        bool mutex_data::locked() const {
+            return _locked;
+        }
 
-    size_t mutex_data::owner() const {
-        return _owner;
-    }
+        void mutex_data::owner(size_t id) {
+            _owner = id;
+        }
 
-    void mutex_data::push_task(detail::task&& t) {
-        _queue.push(std::forward<detail::task>(t));
-    }
+        size_t mutex_data::owner() const {
+            return _owner;
+        }
 
-    detail::task mutex_data::pop_task() {
-        auto t = std::move(_queue.front());
-        _queue.pop();
-        return t;
-    }
+        void mutex_data::push_task(detail::task&& t) {
+            _queue.push(std::forward<detail::task>(t));
+        }
 
-    size_t mutex_data::size() const {
-        return _queue.size();
-    }
+        detail::task mutex_data::pop_task() {
+            auto t = std::move(_queue.front());
+            _queue.pop();
+            return t;
+        }
 
-    bool mutex_data::empty() const {
-        return _queue.empty();
+        size_t mutex_data::size() const {
+            return _queue.size();
+        }
+
+        bool mutex_data::empty() const {
+            return _queue.empty();
+        }
     }
 
     mutex::mutex() : base(),
@@ -92,7 +95,7 @@ namespace gothreads {
         }
     }
 
-    void mutex::_wait_for_mutex(std::unique_lock<std::mutex>& lock, mutex_data& data) const {
+    void mutex::_wait_for_mutex(std::unique_lock<std::mutex>& lock, detail::mutex_data& data) const {
         _thread_pool->yield_task(std::this_thread::get_id(), std::make_shared<detail::messages::wait_for_mutex>(lock, data));
         lock.lock();
     }

@@ -12,7 +12,10 @@
 
 namespace gothreads {
     class mutex;
-    class mutex_data;
+    
+    namespace detail {
+        class mutex_data;
+    }
 }
 
 namespace gothreads {
