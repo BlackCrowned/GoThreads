@@ -99,23 +99,4 @@ namespace gothreads {
         _thread_pool->yield_task(std::this_thread::get_id(), std::make_shared<detail::messages::wait_for_mutex>(lock, data));
         lock.lock();
     }
-
-    /*void mutex::locked() {
-        while(_locked.test_and_set(std::memory_order_acquire)) {
-            _thread_pool->yield_task(std::this_thread::get_id(), std::make_shared<detail::messages::wait_for_mutex>(this));
-        }
-        _thread_pool->get_mutex_control().lock_task(this, _thread_pool->current_task_id());
-    }
-
-    bool mutex::try_lock() {
-        return !_locked.test_and_set(std::memory_order_acquire);
-    }
-
-    void mutex::unlock() {
-        _locked.clear(std::memory_order_release);
-        _thread_pool->get_mutex_control().unlock_task(this);
-        
-    }*/
-
-
 }
