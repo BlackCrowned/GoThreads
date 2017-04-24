@@ -128,6 +128,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="dependencies\SRDelegate.hpp" />
+    <ClInclude Include="include\channel.h" />
     <ClInclude Include="include\detail\asm\imports.h" />
     <ClInclude Include="include\detail\base.h" />
     <ClInclude Include="include\detail\message_queue.h" />
@@ -151,6 +152,7 @@
     <MASM Include="include\detail\asm\x86\swap_context.asm">
       <FileType>Document</FileType>
     </MASM>
+    <None Include="src\channel.inl" />
     <None Include="src\detail\message_queue.inl" />
     <None Include="src\detail\stack.inl" />
     <None Include="src\detail\task.inl" />

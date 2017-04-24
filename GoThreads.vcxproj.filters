@@ -63,6 +63,9 @@
     <ClInclude Include="include\detail\base.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\channel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\gothreads.inl">
@@ -75,6 +78,9 @@
       <Filter>Header Files</Filter>
     </None>
     <None Include="src\detail\message_queue.inl">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="src\channel.inl">
       <Filter>Header Files</Filter>
     </None>
   </ItemGroup>
