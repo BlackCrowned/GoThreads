@@ -4,11 +4,11 @@
 namespace gothreads {
     namespace detail {
 
-        worker_thread::worker_thread() :
+        worker_thread::worker_thread(std::shared_ptr<message_queue<size_t>> mq) :
         _thread(),
         _task_pool(),
-        _mq(std::make_shared<message_queue<size_t>>()),
-        _scheduler(&_task_pool, _mq.message_queue()),
+        _mq(mq),
+        _scheduler(&_task_pool, _mq),
         _scheduler_mq_id(_scheduler.message_queue_id())
         {
             generic::delegate<void()> del(this, &worker_thread::_thread_entry);
@@ -16,16 +16,20 @@ namespace gothreads {
         }
 
         worker_thread::~worker_thread() {
-            _mq.send(_scheduler_mq_id, std::make_unique<messages::exit_thread>(true));
+            _mq->send(_scheduler_mq_id, std::make_unique<messages::exit_thread>(true));
             _thread.join();
         }
 
-        void worker_thread::schedule_task(task&& new_task) {
-            _mq.send(_scheduler_mq_id, std::make_unique<messages::add_task>(std::forward<task>(new_task)));
+        void worker_thread::schedule_task(task&& new_task) const {
+            _mq->send(_scheduler_mq_id, std::make_unique<messages::add_task>(std::forward<task>(new_task)));
         }
 
         void worker_thread::yield_task(task_state state) const {
             _task_pool.current().yield(state);
+        }
+
+        void worker_thread::yield_task(std::shared_ptr<message> msg) const {
+            _task_pool.current().yield(msg);
         }
 
         void worker_thread::wait_for_mutex(mutex const* mutex) {

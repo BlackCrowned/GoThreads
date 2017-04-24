@@ -6,6 +6,7 @@ namespace gothreads {
         thread_pool::thread_pool() :
         _worker_threads(),
         _thread_id_table(),
+        _mq(new message_queue<size_t>()),
         _max_threads(4),
         _id(1)
         {
@@ -19,11 +20,19 @@ namespace gothreads {
         }
 
         void thread_pool::yield_task(ThreadIdType const& id, task_state state) {
-            _worker_threads[_thread_id_table[id]].yield_task(state);
+            _worker_threads.at(_thread_id_table[id]).yield_task(state);
         }
 
-        size_t thread_pool::active_threads() {
+        void thread_pool::yield_task(ThreadIdType const& id, std::shared_ptr<message> msg) {
+            _worker_threads.at(_thread_id_table[id]).yield_task(msg);
+        }
+
+        size_t thread_pool::active_threads() const {
             return _worker_threads.size();
+        }
+
+        void thread_pool::max_threads(size_t n) {
+            _max_threads = n;
         }
 
         thread_pool::IdType thread_pool::current_task_id() const {
@@ -32,6 +41,14 @@ namespace gothreads {
 
         thread_pool::IdType thread_pool::current_task_id(ThreadIdType const& id) const {
             return _worker_threads.at(_thread_id_table.at(id)).get_task_pool().current().id();
+        }
+
+        void thread_pool::send_message(size_t id, std::shared_ptr<message>&& msg) const {
+            _mq->send(id, std::forward<std::shared_ptr<message>>(msg));
+        }
+
+        void thread_pool::broadcast_message(std::shared_ptr<message>&& msg) const {
+            _mq->broadcast(std::forward<std::shared_ptr<message>>(msg));
         }
 
         worker_thread& thread_pool::_get_worker_thread() {
@@ -72,7 +89,7 @@ namespace gothreads {
         }
 
         worker_thread& thread_pool::_allocate_worker_thread() {
-            auto& wt = _worker_threads[++_id];
+            auto& wt = _worker_threads.try_emplace(++_id, _mq).first->second;
             _thread_id_table[wt.id()] = _id;
             return wt;
         }

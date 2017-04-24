@@ -18,6 +18,38 @@ namespace gothreads {
             
         }
 
+        void scheduler::schedule_tasks() {
+            auto& task = _task_pool->next();
+
+            if (task.executable()) {
+                task.exec(&_task_data); //TODO Current Context
+            }
+
+            auto msg = std::move(task.msg());
+            if (msg) {
+                if (msg->type() == typeid(messages::wait_for_mutex)) {
+                    auto m = static_cast<messages::wait_for_mutex*>(msg.get());
+                    auto t = _task_pool->release_current_task();
+
+                    //Set state to waiting
+                    t.state(task_state::blocking);
+                    m->add_to_mutex_data(std::move(t));
+                    return;
+                }
+            }
+
+            switch(task.state()) {
+                case task_state::stopped:
+                    _task_pool->erase_current_task();
+                    break;
+                case task_state::reschedule:
+                    task.state(task_state::blocking);
+                    _task_pool->erase_current_task();
+                    break;
+                default: break;
+            }
+        }
+
         void scheduler::run() {
             while(true) {
                 if (!_mq.empty()) {
@@ -31,30 +63,17 @@ namespace gothreads {
                         auto m = static_cast<messages::add_task*>(msg.get());
                         _task_pool->add(m->get());
                     }
+                    else if (msg->type() == typeid(messages::unlock_task)) {
+                        auto m = static_cast<messages::unlock_task*>(msg.get());
+                        if (!m->empty()) {
+                            auto t = m->get();
+                            t.state(task_state::waiting);
+                            _task_pool->add(std::move(t));
+                        }
+                    }
                 }
                 if (!_task_pool->empty()) {
-                    auto& task = _task_pool->next();
-
-                    if (task.executable()) {
-                        task.exec(&_task_data); //TODO Current Context
-                    }
-
-                    if (task.state() == task_state::stopped)
-                    {
-                        _task_pool->erase_current_task();
-                    }
-
-                    switch(task.state()) {
-                        case task_state::stopped:
-                            _task_pool->erase_current_task();
-                            break;
-                        case task_state::reschedule:
-                            task.state(task_state::blocking);
-                            _task_pool->erase_current_task();
-                            break;
-                        default: break;
-                    }
-                    
+                    schedule_tasks();
                 }
                 else {
                     _mq.wait();

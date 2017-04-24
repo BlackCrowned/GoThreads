@@ -1,4 +1,5 @@
 #include "../../include/detail/message_queue.h"
+#include "../../include/mutex.h"
 
 namespace gothreads {
     namespace detail {
@@ -36,6 +37,42 @@ namespace gothreads {
 
             task&& add_task::get() {
                 return std::move(_task);
+            }
+
+            wait_for_mutex::wait_for_mutex(std::unique_lock<std::mutex>& lock, mutex_data& data) :
+            _lock(lock),
+            _mutex_data(data)
+            {
+                
+            }
+
+            type_info const& wait_for_mutex::type() const {
+                return typeid(wait_for_mutex);
+            }
+
+            void wait_for_mutex::add_to_mutex_data(task&& t) const {
+                _mutex_data.push_task(std::forward<task>(t));
+                _lock.unlock();
+            }
+
+            unlock_task::unlock_task(task&& t) :
+            _task(std::forward<task>(t)),
+            _empty(false)
+            {
+                
+            }
+
+            type_info const& unlock_task::type() const {
+                return typeid(unlock_task);
+            }
+
+            task&& unlock_task::get() {
+                _empty = true;
+                return std::move(_task);
+            }
+
+            bool unlock_task::empty() {
+                return _empty;
             }
         }
     }

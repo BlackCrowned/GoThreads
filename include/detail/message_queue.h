@@ -11,6 +11,14 @@
 #include <algorithm>
 
 namespace gothreads {
+    class mutex;
+    
+    namespace detail {
+        class mutex_data;
+    }
+}
+
+namespace gothreads {
     namespace detail {
 
         class message {
@@ -49,6 +57,34 @@ namespace gothreads {
                 task&& get();
             };
 
+            class wait_for_mutex : public message {
+            private:
+                std::unique_lock<std::mutex>& _lock;
+                mutex_data& _mutex_data;
+
+            public:
+                explicit wait_for_mutex(std::unique_lock<std::mutex>& lock, mutex_data& data);
+                virtual ~wait_for_mutex() = default;
+
+                type_info const& type() const override;
+
+                void add_to_mutex_data(task&& t) const;
+            };
+
+            class unlock_task : public message {
+                task _task;
+                bool _empty;
+
+            public:
+                explicit  unlock_task(task&& t);
+                virtual ~unlock_task() = default;
+
+                type_info const& type() const override;
+
+                task&& get();
+                bool empty();
+            };
+
         }
         
         template<class IdType>
@@ -71,6 +107,7 @@ namespace gothreads {
             message_queue<IdType>& operator=(message_queue<IdType>&& mq) noexcept;
 
             void send(IdType id, std::shared_ptr<message>&& msg);
+            void broadcast(std::shared_ptr<message>&& msg);
             std::shared_ptr<message> receive(IdType id);
 
             IdType register_id();
@@ -107,45 +144,12 @@ namespace gothreads {
             IdType id() const;
             
             void send(IdType id, MessageType&& msg);
+            void broadcast(MessageType&& msg);
             MessageType receive();
 
             bool empty();
 
             void wait();
-        };
-
-        template<class IdType>
-        class one_to_many_message_queue {
-            using MessageType = std::unique_ptr<message>;
-            
-            std::unordered_map<IdType, std::queue<MessageType>> _container;
-
-            mutable std::mutex _mutex;
-            mutable std::condition_variable _cv;
-
-            mutable bool _receiver_asleep;
-
-        public:
-            one_to_many_message_queue();
-            one_to_many_message_queue(one_to_many_message_queue const& mq) = delete;
-            one_to_many_message_queue(one_to_many_message_queue&& mq) = delete;
-
-            void register_receiver(IdType receiver);
-            void unregister_receiver(IdType receiver);
-
-            void broadcast(MessageType const& msg);
-
-            void send(MessageType&& msg, IdType receiver);
-
-            MessageType receive(IdType receiver);
-
-            bool empty(IdType receiver) const;
-
-            void wait() const;
-
-        private:
-            void _conditional_notify(std::unique_lock<std::mutex>& lk) const;
-            void _check_receiver_exists(IdType const& receiver) const;
         };
     }
 }
