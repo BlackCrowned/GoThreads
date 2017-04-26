@@ -31,7 +31,6 @@ namespace gothreads {
 
     class mutex : detail::base{
         std::mutex _m;
-        std::atomic_flag _locked;
         detail::mutex_data _mutex_data;
     public:
         mutex();

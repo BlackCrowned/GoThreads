@@ -56,7 +56,6 @@ namespace gothreads {
 
     mutex::mutex() : base(),
     _m(),
-    _locked(),
     _mutex_data()
     {
         
